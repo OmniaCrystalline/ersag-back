@@ -61,6 +61,8 @@ app.use((err, req, res, next) => {
 
 async function sendMail(req, res, next) {
     const { body } = req
+    console.log('body', body)
+
     await mailSender(body)
     return res.json({ message: body });
 }
@@ -70,7 +72,7 @@ router.post('/', sendMail)
 const nodemailer = require("nodemailer");
 
 async function mailSender(body) {
-    const { order } = body
+    const { order:{order, name, phone} } = body
     console.log('body', order)
 
     try {
@@ -89,7 +91,10 @@ async function mailSender(body) {
             from: 'client',
             to: EMAIL,
             subject: "order",
-            html: `<p>${order}</p>`,
+            html: `<p>name: ${name}</p>
+            <p>phone: ${phone}</p>
+            <p>order: ${order}
+            `,
             text: `<p>замовлення</p>`,
         };
 
