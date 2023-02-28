@@ -10,7 +10,6 @@ const cors = require('cors')
 const { Types } = require('mongoose')
 const { Schema, model } = require('mongoose');
 
-
 async function main() {
     try {
         if (!HOST_DB) {
@@ -61,19 +60,20 @@ app.use((err, req, res, next) => {
 
 async function sendMail(req, res, next) {
     const { body } = req
-    console.log('body', body)
+    const { order: { order, name, phone } } = body
 
-    await mailSender(body)
-    return res.json({ message: body });
+    await mailSender(order, name, phone)
+    console.log('sendMail')
+    //return resp.json({mes: 'ok'})
+    //return response.json({mes: 'ok'});
 }
 
 router.post('/', sendMail)
 
 const nodemailer = require("nodemailer");
 
-async function mailSender(body) {
-    const { order:{order, name, phone} } = body
-    console.log('body', order)
+async function mailSender( order, name, phone ) {
+    console.log('mailsender', order, name, phone)
 
     try {
         const transport = nodemailer.createTransport({
@@ -93,7 +93,7 @@ async function mailSender(body) {
             subject: "order",
             html: `<p>name: ${name}</p>
             <p>phone: ${phone}</p>
-            <p>order: ${order}
+            <ul>order: ${order.toString()}</ul>
             `,
             text: `<p>замовлення</p>`,
         };
