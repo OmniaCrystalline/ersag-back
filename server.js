@@ -60,19 +60,29 @@ app.use((err, req, res, next) => {
 
 async function sendMail(req, res, next) {
     const { body } = req
-    const {  order, name, phone  } = body
-    await mailSender(order, name, phone)
-    return res.json({mes: 'ok'})
+    const { order, name, phone, sum } = body
+    const result = await mailSender(order, name, phone, sum)
+    return res.json({ mes: result })
 }
 
 router.post('/', sendMail)
 
 const nodemailer = require("nodemailer");
 
-async function mailSender( order, name, phone ) {
-    const list = order.map(({ name, quantity, price }) =>
-        `<li>${name}-${quantity} - ${price}</li>`
+async function mailSender(order, name, phone, sum) {
+    const list = order.map(({ name, quantity, price, ml }) =>
+`<tr>
+    <td>${name}</td>
+    <td>${ml}ml</td>
+    <td>${quantity}шт</td>
+    <td>${price}грн</td>
+  </tr>`
+        
     ).join('')
+
+    const s = order.reduce((acc, cur)=> 
+        acc+= Number(cur.quantity) * Number(cur.price), 0)
+    
 
     try {
         const transport = nodemailer.createTransport({
@@ -92,12 +102,25 @@ async function mailSender( order, name, phone ) {
             subject: "order",
             html: `<p>name: ${name}</p>
             <p>phone: ${phone}</p>
-            <ul>order: ${list}</ul>
-            `,
+            <table>
+            <thead>
+            <tr>
+                <th>   назва    </th>
+                <th>   об'єм    </th>
+                <th>   кількість   </th>
+                <th>   вартість   </th>
+            </tr>
+            </thead>
+            <tbody>
+            ${list}
+            </tbody>
+            </table>
+            <p>на суму: ${s}</p>
+                        `,
             text: `<p>замовлення</p>`,
         };
         await transport.sendMail(letter);
-        console.log("Message sent: %s");
+        console.log("Message sent: %s", letter.messageId);
     } catch (error) {
         console.log('error', error)
     }
