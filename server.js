@@ -60,12 +60,9 @@ app.use((err, req, res, next) => {
 
 async function sendMail(req, res, next) {
     const { body } = req
-    const { order: { order, name, phone } } = body
-
+    const {  order, name, phone  } = body
     await mailSender(order, name, phone)
-    console.log('sendMail')
-    //return resp.json({mes: 'ok'})
-    //return response.json({mes: 'ok'});
+    return res.json({mes: 'ok'})
 }
 
 router.post('/', sendMail)
@@ -73,7 +70,9 @@ router.post('/', sendMail)
 const nodemailer = require("nodemailer");
 
 async function mailSender( order, name, phone ) {
-    console.log('mailsender', order, name, phone)
+    const list = order.map(({ name, quantity, price }) =>
+        `<li>${name}-${quantity} - ${price}</li>`
+    ).join('')
 
     try {
         const transport = nodemailer.createTransport({
@@ -93,17 +92,13 @@ async function mailSender( order, name, phone ) {
             subject: "order",
             html: `<p>name: ${name}</p>
             <p>phone: ${phone}</p>
-            <ul>order: ${order.toString()}</ul>
+            <ul>order: ${list}</ul>
             `,
             text: `<p>замовлення</p>`,
         };
-
         await transport.sendMail(letter);
-        console.log("Message sent: %s", letter.messageId);
-
-
+        console.log("Message sent: %s");
     } catch (error) {
         console.log('error', error)
     }
-
 }
