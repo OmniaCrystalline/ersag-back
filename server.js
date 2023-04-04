@@ -39,6 +39,7 @@ const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 app.use(logger(formatsLogger))
 app.use(cors())
 app.use(express.json())
+
 app.use('/', router)
 app.use((req, res) => {
     return res.status(404).json({ message: 'Not found' })
@@ -57,9 +58,9 @@ async function sendMail(req, res, next) {
     return res.json({ mes: order })
 }
 
-//router.post('/', sendMail)
-router.post('/', controller.addGoods)
-router.get('/', controller.getGoods)
+router.post('/', sendMail)
+//router.post('/add', controller.addGoods)
+//router.get('/', controller.getGoods)
 
 const nodemailer = require("nodemailer");
 
