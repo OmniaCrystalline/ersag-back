@@ -59,8 +59,8 @@ async function sendMail(req, res, next) {
 }
 
 router.post('/', sendMail)
-//router.post('/add', controller.addGoods)
-//router.get('/', controller.getGoods)
+router.post('/add', controller.addGoods)
+router.get('/', controller.getGoods)
 
 const nodemailer = require("nodemailer");
 
