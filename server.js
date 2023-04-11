@@ -58,7 +58,7 @@ app.use((err, req, res, next) => {
 
 
 router.post("/", controllerOrders.addOrder);
-router.post("/add", controllerGoods.addGoods);
 router.post("/addOne", controllerGoods.addOneGood);
+router.post("/add", controllerGoods.addGoods);
 router.get("/", controllerGoods.getGoods);
 
