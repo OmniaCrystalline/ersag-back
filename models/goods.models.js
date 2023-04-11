@@ -3,7 +3,7 @@
 const { Good } = require("../schemas/goods.schema");
 
 async function addGoods(req, res, next) {
-console.log('req.body', req.body)
+  console.log("req.body", req.body);
   try {
     const { goods } = req.body;
     await Good.insertMany(source);
@@ -23,9 +23,20 @@ async function getGoods(req, res, next) {
 }
 
 async function addOneGood(req, res, next) {
-  const { formData } = req.body
+  const {
+    formData: { describe, img, usage, title, price, quantity, volume },
+  } = req.body;
   try {
-    const list = await Good.create({formData});
+    const list = await Good.create([{
+      describe,
+      img,
+      usage,
+      title,
+      price,
+      quantity,
+      volume,
+    }]);
+    console.log('list', list)
     return res.json(list);
   } catch (error) {
     return res.json(error.message);
