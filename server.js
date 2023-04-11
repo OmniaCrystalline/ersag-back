@@ -7,12 +7,16 @@ const mongoose = require("mongoose");
 const { HOST_DB, USER, PASS, EMAIL, NEWPASS, USER_NAME, MONGO_URL } =
   process.env;
 const PORT = 3000;
+
+
+//2 routers
 const router = express.Router();
 const logger = require("morgan");
 const cors = require("cors");
 const { Types } = require("mongoose");
 const { Schema, model } = require("mongoose");
-const controller = require("./models/goods.models");
+const controllerGoods = require("./models/goods.models");
+const controllerOrders = require("./models/order.models")
 
 async function main() {
   try {
@@ -51,59 +55,10 @@ app.use((err, req, res, next) => {
   return res.status(500).json({ message: err.message });
 });
 
-async function sendMail(req, res, next) {
-  const { body } = req;
-  console.log("body", body);
-  const { order, name, phone } = body;
-  const result = await mailSender(order, name, phone);
-  return res.json({ mes: order });
-}
 
-router.post("/", sendMail);
-router.post("/add", controller.addGoods);
-router.get("/", controller.getGoods);
 
-const nodemailer = require("nodemailer");
+router.post("/", controllerOrders.addOrder);
+router.post("/add", controllerGoods.addGoods);
+router.post("/addOne", controllerGoods.addOneGood);
+router.get("/", controllerGoods.getGoods);
 
-async function mailSender(order, name, phone) {
-  const list = order
-    .map(
-      ({ name, quantity, price, ml }) =>
-        `<li>${name}-${ml}ml-${quantity}шт-${price}грн</li>`
-    )
-    .join("");
-
-  const s = order.reduce(
-    (acc, cur) => (acc += Number(cur.quantity) * Number(cur.price)),
-    0
-  );
-
-  try {
-    const transport = nodemailer.createTransport({
-      service: "gmail",
-      host: "smtp.gmail.com",
-      secure: false,
-      port: 587,
-      auth: {
-        user: USER,
-        pass: PASS,
-      },
-    });
-
-    const letter = {
-      from: "client",
-      to: EMAIL,
-      subject: "order",
-      html: `<p>name: ${name}</p>
-            <p>phone: ${phone}</p>
-            <ul>
-            ${list}
-            <p>на суму: ${s}</p>`,
-      text: `<p>замовлення</p>`,
-    };
-    await transport.sendMail(letter);
-    console.log("Message sent: %s", letter.messageId);
-  } catch (error) {
-    console.log("error", error);
-  }
-}

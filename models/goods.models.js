@@ -3,6 +3,7 @@
 const { Good } = require("../schemas/goods.schema");
 
 async function addGoods(req, res, next) {
+console.log('req.body', req.body)
   try {
     const { goods } = req.body;
     await Good.insertMany(source);
@@ -21,7 +22,18 @@ async function getGoods(req, res, next) {
   }
 }
 
+async function addOneGood(req, res, next) {
+  const { formData } = req.body
+  try {
+    const list = await Good.create({formData});
+    return res.json(list);
+  } catch (error) {
+    return res.json(error.message);
+  }
+}
+
 module.exports = {
   addGoods,
   getGoods,
+  addOneGood,
 };

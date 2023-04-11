@@ -30,7 +30,7 @@ const OrderSchema = new Schema({
     maxLength: 13,
   },
   order: [OrdersGoodSchema],
-  date: new Date(),
+  //date: new Date(),
 });
 
 const Order = model("orders", OrderSchema);
