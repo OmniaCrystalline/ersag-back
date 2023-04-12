@@ -24,7 +24,7 @@ async function getGoods(req, res, next) {
 
 async function addOneGood(req, res, next) {
   const {
-    formData: { describe, img, usage, title, price, quantity, volume },
+    formData: { describe, img, usage, title, price, quantity, volume, type },
   } = req.body;
   try {
     const list = await Good.create([{
@@ -35,6 +35,7 @@ async function addOneGood(req, res, next) {
       price,
       quantity,
       volume,
+      type,
     }]);
     console.log('list', list)
     return res.json(list);
