@@ -42,6 +42,8 @@ const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 app.use("/", router);
 app.use((req, res) => {
@@ -61,4 +63,5 @@ router.post("/", controllerOrders.addOrder);
 router.post("/addOne", controllerGoods.addOneGood);
 router.post("/add", controllerGoods.addGoods);
 router.get("/", controllerGoods.getGoods);
+router.post("file", controllerGoods.getFile)
 

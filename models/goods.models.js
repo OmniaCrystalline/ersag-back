@@ -24,18 +24,10 @@ async function getGoods(req, res, next) {
 
 async function addOneGood(req, res, next) {
   const {
-    formData: {
-      describe,
-      img,
-      usage,
-      title,
-      price,
-      quantity,
-      volume,
-      type,
-      file,
-    },
+    formData: { describe, img, usage, title, price, quantity, volume, type },
   } = req.body;
+  
+  let file = req.files.file;
 
   const url = axios.post("https://api.flickr.com/services", {
     body: {
@@ -69,8 +61,11 @@ async function addOneGood(req, res, next) {
   };
 }
 
+export const getFile = () => {};
+
 module.exports = {
   addGoods,
   getGoods,
   addOneGood,
+  getFile,
 };
