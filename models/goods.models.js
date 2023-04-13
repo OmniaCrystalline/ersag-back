@@ -24,10 +24,7 @@ async function getGoods(req, res, next) {
 
 async function addOneGood(req, res, next) {
   const {
-    formData: { describe, img, usage, title, price, quantity, volume, type },
-  } = req.body;
-  try {
-    const list = await Good.create([{
+    formData: {
       describe,
       img,
       usage,
@@ -36,12 +33,40 @@ async function addOneGood(req, res, next) {
       quantity,
       volume,
       type,
-    }]);
-    console.log('list', list)
-    return res.json(list);
+      file,
+    },
+  } = req.body;
+
+  const url = axios.post("https://api.flickr.com/services", {
+    body: {
+      api_key: "8ebb6ad5b93e2c9a162d9a6f7dd3e4fd",
+      photo_id: "1",
+      formData: file,
+    },
+  });
+  console.log(url);
+
+  try {
+    const list = await Good.create([
+      {
+        describe,
+        img,
+        usage,
+        title,
+        price,
+        quantity,
+        volume,
+        type,
+      },
+    ]);
+    return res.json({ message: `${list} was added` });
   } catch (error) {
     return res.json(error.message);
   }
+
+  const FlickrURL = (id, secret) => {
+    return `https://live.staticflickr.com/65535/${id}_${secret}_m.jpg`;
+  };
 }
 
 module.exports = {
