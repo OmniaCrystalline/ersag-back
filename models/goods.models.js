@@ -1,6 +1,8 @@
 /** @format */
-
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 const { Good } = require("../schemas/goods.schema");
+
 
 async function addGoods(req, res, next) {
   console.log("req.body", req.body);
@@ -21,51 +23,44 @@ async function getGoods(req, res, next) {
     return res.json(error.message);
   }
 }
-
 async function addOneGood(req, res, next) {
-  const {
-    formData: { describe, img, usage, title, price, quantity, volume, type },
-  } = req.body;
-  
-  let file = req.files.file;
+  const {title, usage, describe, volume, img, price, quantity} = req.body
+  upload.single('file')
+  console.log('req', req.files)
 
   const url = axios.post("https://api.flickr.com/services", {
     body: {
-      api_key: "8ebb6ad5b93e2c9a162d9a6f7dd3e4fd",
+      api_key: process.env.FLICKR_KEY,
       photo_id: "1",
-      formData: file,
+      file,
     },
   });
+
   console.log(url);
 
   try {
     const list = await Good.create([
-      {
-        describe,
-        img,
-        usage,
-        title,
-        price,
-        quantity,
-        volume,
-        type,
-      },
+      title,
+      usage,
+      describe,
+      Number(volume),
+      img,
+      Number(price),
+      Number(quantity),
     ]);
     return res.json({ message: `${list} was added` });
   } catch (error) {
     return res.json(error.message);
   }
+};
 
-  const FlickrURL = (id, secret) => {
+/*  const FlickrURL = (id, secret) => {
     return `https://live.staticflickr.com/65535/${id}_${secret}_m.jpg`;
-  };
-}
+  };*/
 
-export const getFile = () => {};
 
 module.exports = {
   addGoods,
   getGoods,
   addOneGood,
-  getFile,
 };
