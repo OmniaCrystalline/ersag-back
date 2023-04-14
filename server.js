@@ -12,6 +12,9 @@ const cors = require("cors");
 const { Types } = require("mongoose");
 const controllerGoods = require("./models/goods.models");
 const controllerOrders = require("./models/order.models");
+const formatsLogger = app.get("env") === "development" ? "dev" : "short";
+app.use(logger(formatsLogger));
+app.use(cors());
 
 async function main() {
   try {
@@ -31,11 +34,6 @@ async function main() {
 }
 main();
 
-//routes
-const formatsLogger = app.get("env") === "development" ? "dev" : "short";
-
-app.use(logger(formatsLogger));
-app.use(cors());
 app.use(express.json());
 app.use("/static", express.static("upload"));
 app.use("/", router);
