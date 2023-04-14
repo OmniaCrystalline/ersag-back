@@ -4,7 +4,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const { MONGO_URL } =  process.env;
+const { MONGO_URL } = process.env;
 const PORT = 3000;
 const router = express.Router();
 const logger = require("morgan");
@@ -49,9 +49,7 @@ app.use((err, req, res, next) => {
   return res.status(500).json({ message: err.message });
 });
 
-router.get("/", controllerGoods.getGoods);
+router.get("/products", controllerGoods.getGoods);
 router.post("/", controllerOrders.addOrder);
 router.post("/addOne", controllerGoods.addOneGood);
 router.post("/add", controllerGoods.addGoods);
-
-

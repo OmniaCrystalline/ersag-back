@@ -42,7 +42,7 @@ async function addOneGood(req, res, next) {
         });
       }
     });
-    res.json({ fields, files });
+    res.json({ newGood });
   });
 }
 
