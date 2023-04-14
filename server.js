@@ -15,6 +15,19 @@ const controllerOrders = require("./models/order.models");
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 app.use(logger(formatsLogger));
 app.use(cors());
+var whitelist = [
+  "http://localhost:3000",
+  "https://ersag-59502.firebaseapp.com/",
+];
+var corsOptionsDelegate = function (req, callback) {
+  var corsOptions;
+  if (whitelist.indexOf(req.header("Origin")) !== -1) {
+    corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
+  } else {
+    corsOptions = { origin: false }; // disable CORS for this request
+  }
+  callback(null, corsOptions); // callback expects two parameters: error and options
+};
 
 async function main() {
   try {
@@ -49,5 +62,5 @@ app.use((err, req, res, next) => {
 
 router.get("/products", controllerGoods.getGoods);
 router.post("/", controllerOrders.addOrder);
-router.post("/addOne", controllerGoods.addOneGood);
+router.post("/addOne", res.setHeader("Access-Control-Allow-Origin", "*"), controllerGoods.addOneGood);
 router.post("/add", controllerGoods.addGoods);
