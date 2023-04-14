@@ -45,4 +45,5 @@ const Good = model("goods", GoodSchema);
 
 module.exports = {
   Good,
+  GoodSchema,
 };

@@ -4,18 +4,12 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const { HOST_DB, USER, PASS, EMAIL, NEWPASS, USER_NAME, MONGO_URL } =
-  process.env;
+const { MONGO_URL } =  process.env;
 const PORT = 3000;
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
-
-//2 routers
 const router = express.Router();
 const logger = require("morgan");
 const cors = require("cors");
 const { Types } = require("mongoose");
-const { Schema, model } = require("mongoose");
 const controllerGoods = require("./models/goods.models");
 const controllerOrders = require("./models/order.models");
 
@@ -41,25 +35,13 @@ main();
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
 app.use(logger(formatsLogger));
-app.use(
-  cors({
-    origin: true,
-    methods: ["POST"],
-    allowedHeaders: ["Content-Type"],
-  })
-);
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
+app.use("/static", express.static("upload"));
 app.use("/", router);
 app.use((req, res) => {
   return res.status(404).json({ message: "Not found" });
 });
-
-{/*app.post('/addOne', upload.fields([{ name: 'file' }, { name: 'otherInput' }]), (req, res) => {
-  const file = req.files['file'][0];
-const otherInput = req.body['otherInput'];*/}
-
 app.use((err, req, res, next) => {
   console.log("500", err);
   if (!Types.ObjectId.isValid(req.params.id))
@@ -67,18 +49,9 @@ app.use((err, req, res, next) => {
   return res.status(500).json({ message: err.message });
 });
 
-const cpUpload = upload.fields([
-  { name: "file" },
-  { name: "title" },
-  { name: "title" },
-  { name: "title" },
-  { name: "title" },
-  { name: "title" },
-  { name: "title" },
-]);
-
-
+router.get("/", controllerGoods.getGoods);
 router.post("/", controllerOrders.addOrder);
 router.post("/addOne", controllerGoods.addOneGood);
 router.post("/add", controllerGoods.addGoods);
-router.get("/", controllerGoods.getGoods);
+
+
