@@ -62,5 +62,5 @@ app.use((err, req, res, next) => {
 
 router.get("/products", controllerGoods.getGoods);
 router.post("/", controllerOrders.addOrder);
-router.post("/addOne", res.setHeader("Access-Control-Allow-Origin", "*"), controllerGoods.addOneGood);
+router.post("/addOne", cors(corsOptionsDelegate), controllerGoods.addOneGood);
 router.post("/add", controllerGoods.addGoods);
