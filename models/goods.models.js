@@ -22,10 +22,26 @@ async function getGoods(req, res, next) {
 }
 
 async function addOneGood(req, res, next) {
+  const newGood = new Good(fields);
+
   const form = new formidable.IncomingForm({
     multiples: true,
     uploadDir: "./upload/",
     keepExtensions: true,
+  });
+
+  form.on("field", (fieldName, fieldValue) => {
+    newGood[fieldName] = fieldValue;
+  });
+  form.on("file", (formname, file) => {
+    newGood.img = file.newFilename;
+    newGood.save((err) => {
+      if (err) {
+        return res.status(400).json({
+          mes: err.message,
+        });
+      }
+    });
   });
 
   form.parse(req, (err, fields, files) => {
@@ -33,16 +49,8 @@ async function addOneGood(req, res, next) {
       next(err);
       return;
     }
-    const newGood = new Good(fields);
-    newGood.img = files.file.newFilename;
-    newGood.save((err) => {
-      if (err) {
-        return res.status(400).json({
-          mes: res.message
-        });
-      }
-    });
-    res.json({ newGood });
+
+    res.json({ fields, files });
   });
 }
 

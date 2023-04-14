@@ -15,19 +15,6 @@ const controllerOrders = require("./models/order.models");
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 app.use(logger(formatsLogger));
 app.use(cors());
-var whitelist = [
-  "http://localhost:3000",
-  "https://ersag-59502.firebaseapp.com/",
-];
-var corsOptionsDelegate = function (req, callback) {
-  var corsOptions;
-  if (whitelist.indexOf(req.header("Origin")) !== -1) {
-    corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
-  } else {
-    corsOptions = { origin: false }; // disable CORS for this request
-  }
-  callback(null, corsOptions); // callback expects two parameters: error and options
-};
 
 async function main() {
   try {
@@ -59,8 +46,12 @@ app.use((err, req, res, next) => {
     res.status(404).json({ message: "Not found" });
   return res.status(500).json({ message: err.message });
 });
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  next();
+});
 
 router.get("/products", controllerGoods.getGoods);
 router.post("/", controllerOrders.addOrder);
-router.post("/addOne", cors(corsOptionsDelegate), controllerGoods.addOneGood);
+router.post("/addOne", cors(), controllerGoods.addOneGood);
 router.post("/add", controllerGoods.addGoods);
