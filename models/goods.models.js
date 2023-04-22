@@ -56,15 +56,44 @@ async function addOneGood(req, res, next) {
 }
 
 async function changeField(req, res, next) {
-  const { field, _id } = req.body;
-  try {
-    await Good.findByIdAndUpdate({
-      _id,
-      field,
+  const { _id, data } = req.body;
+  console.log('data, _id', data, _id)
+
+  if (data.file) {
+    const form = new formidable.IncomingForm({
+      multiples: true,
+      uploadDir: "./upload/",
+      keepExtensions: true,
     });
-    return res.json({message: `${_id} - ${field}`})
-  } catch (error) {
-    console.error(error);
+
+    form.on("file", async (formname, file) => {
+      try {
+        const res = await Good.findByIdAndUpdate(
+          _id,
+          { file: file.newFilename },
+          { new: true }
+        );
+        console.log('res.data', res.data)
+      } catch (error) {
+        console.error(error);
+      }
+    });
+
+    form.parse(req, (err, fields, files) => {
+      if (err) {
+        next(err);
+        return;
+      }
+      res.json({ fields, files });
+    });
+  } else {
+    try {
+      const res = await Good.findByIdAndUpdate(_id, data, { new: true });
+      console.log('res.data', res.data)
+      return res.json(res);
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
 
