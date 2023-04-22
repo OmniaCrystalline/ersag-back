@@ -22,7 +22,7 @@ async function getGoods(req, res, next) {
 }
 
 async function addOneGood(req, res, next) {
-  const newGood = new Good(fields);
+  const newGood = new Good();
 
   const form = new formidable.IncomingForm({
     multiples: true,
@@ -33,6 +33,7 @@ async function addOneGood(req, res, next) {
   form.on("field", (fieldName, fieldValue) => {
     newGood[fieldName] = fieldValue;
   });
+
   form.on("file", (formname, file) => {
     newGood.img = file.newFilename;
     newGood.save((err) => {
@@ -54,8 +55,22 @@ async function addOneGood(req, res, next) {
   });
 }
 
+async function changeField(req, res, next) {
+  const { field, _id } = req.body;
+  try {
+    await Good.findByIdAndUpdate({
+      _id,
+      field,
+    });
+    return res.json({message: `${_id} - ${field}`})
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 module.exports = {
   addGoods,
   getGoods,
   addOneGood,
+  changeField,
 };
