@@ -14,8 +14,8 @@ async function addGoods(req, res, next) {
 
 async function getGoods(req, res, next) {
   try {
-    const list = await Good.find({});
-    return res.json(list);
+    const data = await Good.find({});
+    return res.json({ data });
   } catch (error) {
     return res.json(error.message);
   }
@@ -57,9 +57,14 @@ async function addOneGood(req, res, next) {
 
 async function changeField(req, res, next) {
   const { _id, data } = req.body;
-  console.log('data, _id', data, _id)
+  console.log('req.body', req.body)
 
-  if (data.file) {
+  if (!Object.keys(data).length) {
+    console.log("delete");
+    const data = await Good.findByIdAndRemove({ _id: _id });
+    return res.json({ data });
+  } else if (data.file) {
+    console.log("file update");
     const form = new formidable.IncomingForm({
       multiples: true,
       uploadDir: "./upload/",
@@ -73,7 +78,6 @@ async function changeField(req, res, next) {
           { file: file.newFilename },
           { new: true }
         );
-        console.log('res.data', res.data)
       } catch (error) {
         console.error(error);
       }
@@ -88,9 +92,18 @@ async function changeField(req, res, next) {
     });
   } else {
     try {
-      const res = await Good.findByIdAndUpdate(_id, data, { new: true });
-      console.log('res.data', res.data)
-      return res.json(res);
+      console.log("update field");
+      const key = Object.keys(data);
+      const elem = await Good.findOne({ _id });
+      let val = Object.values(data).toString();
+
+      if (Number(Object.values(req.body.data))) {
+        val = Number(Object.values(req.body.data));
+      }
+
+      elem[key] = val;
+      await elem.save();
+      return res.json(elem);
     } catch (error) {
       console.error(error);
     }
