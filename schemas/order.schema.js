@@ -1,8 +1,14 @@
 /** @format */
 
+const { any } = require("joi");
 const { Schema, model } = require("mongoose");
 
 const OrdersGoodSchema = new Schema({
+  
+  title: {
+    type: String,
+    required: [true, 'title is required'],
+  },
   price: {
     type: Number,
     required: [true, "Price is required"],
@@ -30,7 +36,6 @@ const OrderSchema = new Schema({
     maxLength: 13,
   },
   order: [OrdersGoodSchema],
-  //date: new Date(),
 });
 
 const Order = model("orders", OrderSchema);

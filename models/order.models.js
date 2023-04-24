@@ -4,10 +4,10 @@ const { Order } = require("../schemas/order.schema");
 
 async function addOrder(req, res, next) {
     try {
-        await Order.create(req.body);
-        await mailSender(req)
+      await Order.create(req.body);
+      await mailSender(req.body)
         
-    return res.json({message: res.data});
+    return res.json({message: 'order added'});
   } catch (error) {
     return res.json(error);
   }
