@@ -53,6 +53,6 @@ app.use((req, res, next) => {
 
 router.get("/products", controllerGoods.getGoods);
 router.post("/", controllerOrders.addOrder);
-router.post("/addOne", cors(), controllerGoods.addOneGood);
-router.put("/editField", controllerGoods.changeField);
+router.post("/addOne", controllerGoods.addOneGood);
+router.patch("/editField",  controllerGoods.changeField);
 router.post("/add", controllerGoods.addGoods);

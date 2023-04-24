@@ -15,8 +15,6 @@ async function addOrder(req, res, next) {
 
 const nodemailer = require("nodemailer");
 
-
-
 async function mailSender({req:{order, name, phone}}) {
   const list = order
     .map(

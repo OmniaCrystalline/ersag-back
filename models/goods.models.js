@@ -22,8 +22,6 @@ async function getGoods(req, res, next) {
 }
 
 async function addOneGood(req, res, next) {
-  const newGood = new Good();
-
   const form = new formidable.IncomingForm({
     multiples: true,
     uploadDir: "./upload/",
@@ -36,6 +34,7 @@ async function addOneGood(req, res, next) {
 
   form.on("file", (formname, file) => {
     newGood.img = file.newFilename;
+    console.log("newGood", newGood);
     newGood.save((err) => {
       if (err) {
         return res.status(400).json({
@@ -50,64 +49,38 @@ async function addOneGood(req, res, next) {
       next(err);
       return;
     }
-
+    console.log("newGood", newGood);
     res.json({ fields, files });
   });
 }
 
 async function changeField(req, res, next) {
-  const { _id, data } = req.body;
-  console.log('req.body', req.body)
+  console.log("changeField");
+  const update = {};
+  const newGood = new Good();
 
-  if (!Object.keys(data).length) {
-    console.log("delete");
-    const data = await Good.findByIdAndRemove({ _id: _id });
-    return res.json({ data });
-  } else if (data.file) {
-    console.log("file update");
-    const form = new formidable.IncomingForm({
-      multiples: true,
-      uploadDir: "./upload/",
-      keepExtensions: true,
-    });
+  const form = new formidable.IncomingForm({
+    multiples: true,
+    uploadDir: "./upload/",
+    keepExtensions: true,
+  });
 
-    form.on("file", async (formname, file) => {
-      try {
-        const res = await Good.findByIdAndUpdate(
-          _id,
-          { file: file.newFilename },
-          { new: true }
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    });
+  form.on("field", async (field, value) => {
+    update[field] = value
+  });
 
-    form.parse(req, (err, fields, files) => {
-      if (err) {
-        next(err);
-        return;
-      }
-      res.json({ fields, files });
-    });
-  } else {
-    try {
-      console.log("update field");
-      const key = Object.keys(data);
-      const elem = await Good.findOne({ _id });
-      let val = Object.values(data).toString();
+  form.on("file", (formname, file) => {
+    update.img = file.newFilename;
+  });
 
-      if (Number(Object.values(req.body.data))) {
-        val = Number(Object.values(req.body.data));
-      }
-
-      elem[key] = val;
-      await elem.save();
-      return res.json(elem);
-    } catch (error) {
-      console.error(error);
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      next(err);
+      return;
     }
-  }
+    const good = await Good.findByIdAndUpdate({ _id: fields._id }, update);
+    res.json({ fields, files });
+  });
 }
 
 module.exports = {
