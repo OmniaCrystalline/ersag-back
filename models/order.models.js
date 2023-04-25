@@ -1,5 +1,8 @@
 /** @format */
 
+
+///server update get order router , add order render
+
 const { Order } = require("../schemas/order.schema");
 
 async function addOrder(req, res, next) {
@@ -15,7 +18,8 @@ async function addOrder(req, res, next) {
 
 const nodemailer = require("nodemailer");
 
-async function mailSender({req:{order, name, phone}}) {
+async function mailSender(req) {
+  const {name, phone, order} = req.body
   const list = order
     .map(
       ({ title, quantity, price, volume }) =>
@@ -58,7 +62,17 @@ async function mailSender({req:{order, name, phone}}) {
   }
 }
 
+async function fetchOrders(req, res, next) {
+  try {
+    const data = await Order.find({});
+    return res.json({ data });
+  } catch (error) {
+    return res.status(500).json({message: error})
+  }  
+}
+
 module.exports = {
-    addOrder,
+  addOrder,
+  fetchOrders,
 }
 
