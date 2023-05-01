@@ -22,6 +22,7 @@ async function getGoods(req, res, next) {
 }
 
 async function addOneGood(req, res, next) {
+  const newGood = new Good()
   const form = new formidable.IncomingForm({
     multiples: true,
     uploadDir: "./upload/",
