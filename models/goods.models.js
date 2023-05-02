@@ -33,23 +33,20 @@ async function addOneGood(req, res, next) {
     newGood[fieldName] = fieldValue;
   });
 
-  form.on("file", (formname, file) => {
-    newGood.img = file.newFilename;
-    console.log("newGood", newGood);
-    newGood.save((err) => {
-      if (err) {
-        return res.status(400).json({
-          mes: err.message,
-        });
-      }
-    });
-  });
-
-  form.parse(req, (err, fields, files) => {
+   form.parse(req, (err, fields, files) => {
     if (err) {
       next(err);
       return;
     }
+    let oldPath = files.profilePic.filepath;
+    let newPath = path.join(__dirname, "uploads") + "/" + files.profilePic.name;
+    let rawData = fs.readFileSync(oldPath);
+
+    fs.writeFile(newPath, rawData, function (err) {
+      if (err) console.log(err);
+      //return res.send("Successfully uploaded");
+    });
+    newGood.img = `https://ersagback.onrender.com/static/${newPath}`;
     console.log("newGood", newGood);
     res.json({ fields, files });
   });
@@ -57,8 +54,7 @@ async function addOneGood(req, res, next) {
 
 async function changeField(req, res, next) {
   console.log("changeField");
-  const update = {};
-  const newGood = new Good();
+  const updated = {}
 
   const form = new formidable.IncomingForm({
     multiples: true,
@@ -67,11 +63,7 @@ async function changeField(req, res, next) {
   });
 
   form.on("field", async (field, value) => {
-    update[field] = value
-  });
-
-  form.on("file", (formname, file) => {
-    update.img = file.newFilename;
+    updated[field] = value
   });
 
   form.parse(req, async (err, fields, files) => {
@@ -79,7 +71,17 @@ async function changeField(req, res, next) {
       next(err);
       return;
     }
-    const good = await Good.findByIdAndUpdate({ _id: fields._id }, update);
+    let oldPath = files.profilePic.filepath;
+    let newPath = path.join(__dirname, "uploads") + "/" + files.profilePic.name;
+    let rawData = fs.readFileSync(oldPath);
+
+    fs.writeFile(newPath, rawData, function (err) {
+      if (err) console.log(err);
+      //return res.send("Successfully uploaded");
+    });
+    updated.img=`https://ersagback.onrender.com/static/${newPath}`;
+    const good = await Good.findByIdAndUpdate({ _id: fields._id }, updated);
+    console.log('good', good)
     res.json({ fields, files });
   });
 }
