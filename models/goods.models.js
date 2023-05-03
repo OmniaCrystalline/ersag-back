@@ -80,7 +80,7 @@ async function changeField(req, res, next) {
     const item = await Good.findById(updated._id);
 
     try {
-      const filePath = uploadDir + "\\" + item.img;
+      const filePath = uploadDir + "//" + item.img;
       fs.unlinkSync(filePath);
     } catch (error) {
       console.log("error.message", error.message);
@@ -97,7 +97,7 @@ async function changeField(req, res, next) {
 async function deleteGood(req, res, next) {
   const item = await Good.findById(req.query._id);
   try {
-    const filePath = uploadDir + "\\" + item.img
+    const filePath = uploadDir + "//" + item.img
     fs.unlinkSync(filePath);
   } catch (error) {
     console.log("error.message", error.message);
