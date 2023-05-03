@@ -40,7 +40,8 @@ async function addOneGood(req, res, next) {
   });
 
   form.on("file", (name, file) => {
-    console.log('file', file)
+    console.log("file", file);
+    //May 4 12:36:15 AM    filepath: '/opt/render/project/src/upload/d6e802324b75d5006064b3700.jpg',
     newGood.img = file.newFilename;
   });
 
