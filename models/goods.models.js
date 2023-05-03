@@ -40,7 +40,7 @@ async function addOneGood(req, res, next) {
   });
 
   form.on("file", (name, file) => {
-    newGood.img = `${process.env.URL_BACK}/static/${file.newFilename}`;
+    newGood.img = file.newFilename;
   });
 
   form.parse(req, async (err, fields, files) => {
@@ -68,7 +68,7 @@ async function changeField(req, res, next) {
   });
 
   form.on("file", function (name, file) {
-    if (file) updated.img = `${filesFolderChanger}/static/${file.newFilename}`;
+    if (file) updated.img = file.newFilename;
   });
 
   form.parse(req, async (err, fields, files) => {
@@ -80,8 +80,7 @@ async function changeField(req, res, next) {
     const item = await Good.findById(updated._id);
 
     try {
-      const toDelImg = item.img.match(/static\/(.*)/);
-      const filePath = uploadDir + "\\" + toDelImg[1];
+      const filePath = uploadDir + "\\" + item.img;
       fs.unlinkSync(filePath);
     } catch (error) {
       console.log("error.message", error.message);
@@ -98,8 +97,7 @@ async function changeField(req, res, next) {
 async function deleteGood(req, res, next) {
   const item = await Good.findById(req.query._id);
   try {
-    const toDelImg = item.img.match(/static\/(.*)/);
-    const filePath = uploadDir + "\\" + toDelImg[1];
+    const filePath = uploadDir + "\\" + item.img
     fs.unlinkSync(filePath);
   } catch (error) {
     console.log("error.message", error.message);
