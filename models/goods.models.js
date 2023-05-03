@@ -40,10 +40,12 @@ async function addOneGood(req, res, next) {
   });
 
   form.on("file", (name, file) => {
+    console.log('file', file)
     newGood.img = file.newFilename;
   });
 
-  form.parse(req, async (err, fields, files) => {
+  form.parse(req, async (err, fields, files) =>
+  {
     if (err) {
       next(err);
       return;
@@ -68,6 +70,8 @@ async function changeField(req, res, next) {
   });
 
   form.on("file", function (name, file) {
+    console.log('file', file)
+    console.log('file.newFilename', file.newFilename)
     if (file) updated.img = file.newFilename;
   });
 
@@ -76,20 +80,16 @@ async function changeField(req, res, next) {
       next(err);
       return;
     }
-
     const item = await Good.findById(updated._id);
-
     try {
       const filePath = "upload/" + item.img;
       fs.unlinkSync(filePath);
     } catch (error) {
       console.log("error.message", error.message);
     }
-
     const elem = await Good.findByIdAndUpdate(updated._id, updated, {
       new: true,
     });
-
     return res.json({ message: elem });
   });
 }
