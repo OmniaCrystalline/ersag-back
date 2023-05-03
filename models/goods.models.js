@@ -5,7 +5,7 @@ const formidable = require("formidable");
 const fs = require("fs");
 const path = require("path");
 const uploadDir = path.join(process.cwd(), "upload");
-const filesFolderChanger = process.env.REACT_APP_URL;
+const filesFolderChanger = process.env.URL_BACK;
 
 async function addGoods(req, res, next) {
   try {
@@ -27,7 +27,6 @@ async function getGoods(req, res, next) {
 }
 
 async function addOneGood(req, res, next) {
-  console.log("addOneGood");
   const newGood = new Good();
 
   const form = new formidable.IncomingForm({
@@ -40,8 +39,8 @@ async function addOneGood(req, res, next) {
     newGood[fieldName] = fieldValue;
   });
 
-  form.on("file", async (name, file) => {
-    newGood.img = `${filesFolderChanger}/static/${file.newFilename}`;
+  form.on("file", (name, file) => {
+    newGood.img = `${process.env.URL_BACK}/static/${file.newFilename}`;
   });
 
   form.parse(req, async (err, fields, files) => {
@@ -49,13 +48,12 @@ async function addOneGood(req, res, next) {
       next(err);
       return;
     }
-    const result = newGood.save();
+    const result = await newGood.save();
     return res.json({ message: result });
   });
 }
 
 async function changeField(req, res, next) {
-  console.log("changeField");
   const updated = {};
 
   const form = new formidable.IncomingForm({
@@ -64,12 +62,13 @@ async function changeField(req, res, next) {
     keepExtensions: true,
   });
 
-  form.on("file", function (name, file) {
-    updated.img = `${filesFolderChanger}/static/${file.newFilename}`;
+  form.on("field", (field, value) => {
+    const number = "price" || "volume" || "quantity";
+    updated[field] = field === number ? Number(value) : value;
   });
 
-  form.on("field", async (field, value) => {
-    updated[field] = value;
+  form.on("file", function (name, file) {
+    if (file) updated.img = `${filesFolderChanger}/static/${file.newFilename}`;
   });
 
   form.parse(req, async (err, fields, files) => {
@@ -77,27 +76,35 @@ async function changeField(req, res, next) {
       next(err);
       return;
     }
+
     const item = await Good.findById(updated._id);
-    const toDelImg = item.img.match(/static\/(.*)/)[1];
-     if (toDelImg) {
-       const filePath = uploadDir + "\\" + toDelImg;
-       fs.unlinkSync(filePath);
-     }
+
+    try {
+      const toDelImg = item.img.match(/static\/(.*)/);
+      const filePath = uploadDir + "\\" + toDelImg[1];
+      fs.unlinkSync(filePath);
+    } catch (error) {
+      console.log("error.message", error.message);
+    }
+
     const elem = await Good.findByIdAndUpdate(updated._id, updated, {
       new: true,
     });
+
     return res.json({ message: elem });
   });
 }
 
 async function deleteGood(req, res, next) {
-  const item = await Good.findById(req.body._id);
-  const toDelImg = item.img.match(/static\/(.*)/)[1];
-  if (toDelImg) {
-    const filePath = uploadDir + "\\" + toDelImg;
+  const item = await Good.findById(req.query._id);
+  try {
+    const toDelImg = item.img.match(/static\/(.*)/);
+    const filePath = uploadDir + "\\" + toDelImg[1];
     fs.unlinkSync(filePath);
+  } catch (error) {
+    console.log("error.message", error.message);
   }
-  const result = await Good.findOneAndRemove(req.body._id);
+  const result = await Good.findOneAndRemove(req.query._id);
   return res.json({ message: result });
 }
 
