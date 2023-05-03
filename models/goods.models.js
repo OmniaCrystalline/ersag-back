@@ -31,7 +31,7 @@ async function addOneGood(req, res, next) {
 
   const form = new formidable.IncomingForm({
     multiples: true,
-    uploadDir,
+    uploadDir: './upload',
     keepExtensions: true,
   });
 
@@ -80,7 +80,7 @@ async function changeField(req, res, next) {
     const item = await Good.findById(updated._id);
 
     try {
-      const filePath = uploadDir + "//" + item.img;
+      const filePath = "upload/" + item.img;
       fs.unlinkSync(filePath);
     } catch (error) {
       console.log("error.message", error.message);
