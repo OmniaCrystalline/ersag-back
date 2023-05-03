@@ -58,3 +58,4 @@ router.patch("/editField", controllerGoods.changeField);
 router.post("/add", controllerGoods.addGoods);
 router.post('/order', controllerOrders.addOrder)
 router.get('/order', controllerOrders.fetchOrders)
+router.delete('/deleteOne', controllerGoods.deleteGood)

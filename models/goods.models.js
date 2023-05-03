@@ -40,17 +40,17 @@ async function addOneGood(req, res, next) {
     newGood[fieldName] = fieldValue;
   });
 
-  form.on("file", async(name, file) => {
+  form.on("file", async (name, file) => {
     newGood.img = `${filesFolderChanger}/static/${file.newFilename}`;
   });
 
-  form.parse(req, async(err, fields, files) => {
+  form.parse(req, async (err, fields, files) => {
     if (err) {
       next(err);
       return;
     }
     const result = newGood.save();
-    return res.json({message: result})
+    return res.json({ message: result });
   });
 }
 
@@ -66,28 +66,39 @@ async function changeField(req, res, next) {
 
   form.on("file", function (name, file) {
     updated.img = `${filesFolderChanger}/static/${file.newFilename}`;
-    console.log("Uploaded " + file.newFilename);
   });
 
   form.on("field", async (field, value) => {
     updated[field] = value;
   });
 
-  form.parse(req, async(err, fields, files) => {
+  form.parse(req, async (err, fields, files) => {
     if (err) {
       next(err);
       return;
     }
-    //console.log(updated)
-    const item = await Good.findById(updated._id)
-    console.log('item', item.img)
-    const elem = await Good.findByIdAndUpdate(updated._id, updated, {new: true})
+    const item = await Good.findById(updated._id);
     const toDelImg = item.img.match(/static\/(.*)/)[1];
-    const filePath = uploadDir + '\\' + toDelImg
-    console.log('filePath', filePath)
-    fs.unlinkSync(filePath);
-    return res.json({message: elem})
+     if (toDelImg) {
+       const filePath = uploadDir + "\\" + toDelImg;
+       fs.unlinkSync(filePath);
+     }
+    const elem = await Good.findByIdAndUpdate(updated._id, updated, {
+      new: true,
+    });
+    return res.json({ message: elem });
   });
+}
+
+async function deleteGood(req, res, next) {
+  const item = await Good.findById(req.body._id);
+  const toDelImg = item.img.match(/static\/(.*)/)[1];
+  if (toDelImg) {
+    const filePath = uploadDir + "\\" + toDelImg;
+    fs.unlinkSync(filePath);
+  }
+  const result = await Good.findOneAndRemove(req.body._id);
+  return res.json({ message: result });
 }
 
 module.exports = {
@@ -95,4 +106,5 @@ module.exports = {
   getGoods,
   addOneGood,
   changeField,
+  deleteGood,
 };
