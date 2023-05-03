@@ -1,6 +1,11 @@
 /** @format */
+require("dotenv").config();
 const { Good } = require("../schemas/goods.schema");
 const formidable = require("formidable");
+const fs = require("fs");
+const path = require("path");
+const uploadDir = path.join(process.cwd(), "upload");
+const filesFolderChanger = process.env.REACT_APP_URL;
 
 async function addGoods(req, res, next) {
   try {
@@ -22,27 +27,30 @@ async function getGoods(req, res, next) {
 }
 
 async function addOneGood(req, res, next) {
+  console.log("addOneGood");
   const newGood = new Good();
 
   const form = new formidable.IncomingForm({
     multiples: true,
-    // uploadDir: "./upload/",
+    uploadDir,
     keepExtensions: true,
-  });
-
-  form.parse(req);
-
-  form.on("fileBegin", function (name, file) {
-    file.path = __dirname + "/uploads/" + file.name;
   });
 
   form.on("field", (fieldName, fieldValue) => {
     newGood[fieldName] = fieldValue;
   });
 
-  form.on("file", function (name, file) {
-    newGood.img = `https://ersagback.onrender.com/static/${file.name}`;
-    console.log("Uploaded " + file.name);
+  form.on("file", async(name, file) => {
+    newGood.img = `${filesFolderChanger}/static/${file.newFilename}`;
+  });
+
+  form.parse(req, async(err, fields, files) => {
+    if (err) {
+      next(err);
+      return;
+    }
+    const result = newGood.save();
+    return res.json({message: result})
   });
 }
 
@@ -52,25 +60,33 @@ async function changeField(req, res, next) {
 
   const form = new formidable.IncomingForm({
     multiples: true,
-    //uploadDir: "./upload/",
+    uploadDir,
     keepExtensions: true,
   });
 
-  form.parse(req, async (err, fields, files) => {
+  form.on("file", function (name, file) {
+    updated.img = `${filesFolderChanger}/static/${file.newFilename}`;
+    console.log("Uploaded " + file.newFilename);
+  });
+
+  form.on("field", async (field, value) => {
+    updated[field] = value;
+  });
+
+  form.parse(req, async(err, fields, files) => {
     if (err) {
       next(err);
       return;
     }
-    form.on("file", function (name, file) {
-      updated.img = `https://ersagback.onrender.com/static/${file.name}`;
-      console.log("Uploaded " + file.name);
-    });
-
-    form.on("field", async (field, value) => {
-      updated[field] = value;
-    });
-    const good = await Good.findByIdAndUpdate({ _id: fields._id }, updated);
-    console.log("good", good);
+    //console.log(updated)
+    const item = await Good.findById(updated._id)
+    console.log('item', item.img)
+    const elem = await Good.findByIdAndUpdate(updated._id, updated, {new: true})
+    const toDelImg = item.img.match(/static\/(.*)/)[1];
+    const filePath = uploadDir + '\\' + toDelImg
+    console.log('filePath', filePath)
+    fs.unlinkSync(filePath);
+    return res.json({message: elem})
   });
 }
 
