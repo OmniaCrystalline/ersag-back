@@ -35,7 +35,7 @@ async function main() {
 main();
 
 app.use(express.json());
-app.use("/static", express.static("/opt/render/project/src/upload"));
+app.use("/static", express.static(path.join(__dirname, "upload")));
 app.use("/", router);
 app.use((req, res) => {
   return res.status(404).json({ message: "Not found" });
