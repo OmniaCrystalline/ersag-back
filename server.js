@@ -38,7 +38,7 @@ async function main() {
 main();
 
 app.use(express.json());
-app.use(express.static("upload"));
+app.use(express.static("public"));
 app.use("/", router);
 
 app.use((req, res) => {
