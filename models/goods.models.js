@@ -3,9 +3,7 @@ require("dotenv").config();
 const { Good } = require("../schemas/goods.schema");
 const formidable = require("formidable");
 const fs = require("fs");
-const path = require("path");
 const uploadDir = "./public/images/";
-const filesFolderChanger = process.env.URL_BACK;
 
 async function addGoods(req, res, next) {
   try {
@@ -40,7 +38,6 @@ async function addOneGood(req, res, next) {
   });
 
   form.on("file", (name, file) => {
-    console.log("file", file);
     newGood.img = file.newFilename;
   });
 
@@ -49,7 +46,6 @@ async function addOneGood(req, res, next) {
       next(err);
       return;
     }
-    console.log("uploadDir", uploadDir);
     const result = await newGood.save();
     return res.json({ message: result });
   });
@@ -70,7 +66,6 @@ async function changeField(req, res, next) {
   });
 
   form.on("file", function (name, file) {
-    console.log("file.newFilename", file.newFilename);
     if (file) updated.img = file.newFilename;
   });
 
@@ -103,7 +98,7 @@ async function deleteGood(req, res, next) {
   } catch (error) {
     console.log("error.message", error.message);
   }
-  const result = await Good.findOneAndRemove(req.query._id);
+  const result = await Good.findByIdAndRemove(req.query._id);
   return res.json({ message: result });
 }
 
