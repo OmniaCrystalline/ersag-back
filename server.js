@@ -11,6 +11,7 @@ const logger = require("morgan");
 const cors = require("cors");
 const { Types } = require("mongoose");
 const path = require("path");
+const serveStatic = require("serve-static");
 
 const controllerGoods = require("./models/goods.models");
 const controllerOrders = require("./models/order.models");
@@ -37,8 +38,9 @@ async function main() {
 main();
 
 app.use(express.json());
-app.use("/static", express.static(path.join(__dirname, "upload")));
+app.use(express.static("upload"));
 app.use("/", router);
+
 app.use((req, res) => {
   return res.status(404).json({ message: "Not found" });
 });

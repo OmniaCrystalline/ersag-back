@@ -4,7 +4,7 @@ const { Good } = require("../schemas/goods.schema");
 const formidable = require("formidable");
 const fs = require("fs");
 const path = require("path");
-const uploadDir = path.join(process.cwd(), "upload");
+const uploadDir = path.join(process.cwd(), "upload/images");
 const filesFolderChanger = process.env.URL_BACK;
 
 async function addGoods(req, res, next) {
@@ -31,7 +31,7 @@ async function addOneGood(req, res, next) {
 
   const form = new formidable.IncomingForm({
     multiples: true,
-    uploadDir: './upload',
+    uploadDir,
     keepExtensions: true,
   });
 
@@ -41,16 +41,15 @@ async function addOneGood(req, res, next) {
 
   form.on("file", (name, file) => {
     console.log("file", file);
-    //May 4 12:36:15 AM    filepath: '/opt/render/project/src/upload/d6e802324b75d5006064b3700.jpg',
     newGood.img = file.newFilename;
   });
 
-  form.parse(req, async (err, fields, files) =>
-  {
+  form.parse(req, async (err, fields, files) => {
     if (err) {
       next(err);
       return;
     }
+    console.log("uploadDir", uploadDir);
     const result = await newGood.save();
     return res.json({ message: result });
   });
@@ -71,8 +70,7 @@ async function changeField(req, res, next) {
   });
 
   form.on("file", function (name, file) {
-    console.log('file', file)
-    console.log('file.newFilename', file.newFilename)
+    console.log("file.newFilename", file.newFilename);
     if (file) updated.img = file.newFilename;
   });
 
@@ -81,9 +79,11 @@ async function changeField(req, res, next) {
       next(err);
       return;
     }
+    console.log("uploadDir", uploadDir);
+
     const item = await Good.findById(updated._id);
     try {
-      const filePath = "upload/" + item.img;
+      const filePath = uploadDir + '//' + item.img;
       fs.unlinkSync(filePath);
     } catch (error) {
       console.log("error.message", error.message);
@@ -98,7 +98,7 @@ async function changeField(req, res, next) {
 async function deleteGood(req, res, next) {
   const item = await Good.findById(req.query._id);
   try {
-    const filePath = uploadDir + "//" + item.img
+    const filePath = uploadDir + "//" + item.img;
     fs.unlinkSync(filePath);
   } catch (error) {
     console.log("error.message", error.message);
