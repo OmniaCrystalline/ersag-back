@@ -5,6 +5,7 @@ const formidable = require("formidable");
 const fs = require("fs");
 const uploadDir = "./public/images/";
 
+
 async function addGoods(req, res, next) {
   try {
     const { goods } = req.body;
@@ -39,6 +40,7 @@ async function addOneGood(req, res, next) {
 
   form.on("file", (name, file) => {
     newGood.img = file.newFilename;
+
   });
 
   form.parse(req, async (err, fields, files) => {

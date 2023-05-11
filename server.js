@@ -15,9 +15,18 @@ const serveStatic = require("serve-static");
 
 const controllerGoods = require("./models/goods.models");
 const controllerOrders = require("./models/order.models");
+const { addOneGoodCloud } = require('./models/pcloud')
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 app.use(logger(formatsLogger));
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://ersag-edit.web.app/",
+      "https://ersag-front.web.app",
+      "https://ersag-59502.web.app/"
+    ],
+  })
+);
 
 async function main() {
   try {
@@ -41,6 +50,11 @@ app.use(express.json());
 app.use(express.static("public"));
 app.use("/", router);
 
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  next();
+});
+
 app.use((req, res) => {
   return res.status(404).json({ message: "Not found" });
 });
@@ -50,10 +64,7 @@ app.use((err, req, res, next) => {
     res.status(404).json({ message: "Not found" });
   return res.status(500).json({ message: err.message });
 });
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  next();
-});
+
 
 router.get("/products", controllerGoods.getGoods);
 router.post("/", controllerOrders.addOrder);
