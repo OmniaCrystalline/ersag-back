@@ -10,23 +10,11 @@ const router = express.Router();
 const logger = require("morgan");
 const cors = require("cors");
 const { Types } = require("mongoose");
-const path = require("path");
-const serveStatic = require("serve-static");
+const morgan = require("morgan");
 
 const controllerGoods = require("./models/goods.models");
 const controllerOrders = require("./models/order.models");
-const { addOneGoodCloud } = require('./models/pcloud')
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
-app.use(logger(formatsLogger));
-app.use(
-  cors({
-    origin: [
-      "https://ersag-edit.web.app/",
-      "https://ersag-front.web.app",
-      "https://ersag-59502.web.app/"
-    ],
-  })
-);
 
 async function main() {
   try {
@@ -46,14 +34,21 @@ async function main() {
 }
 main();
 
+app.use(morgan("dev"));
+app.use(logger(formatsLogger));
+app.use(
+  cors({
+    origin: [
+      "https://ersag-front.web.app/",
+      "https://ersag-59502.web.app/",
+      "https://ersag-edit.web.app/",
+    ],
+  })
+);
+
 app.use(express.json());
 app.use(express.static("public"));
 app.use("/", router);
-
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  next();
-});
 
 app.use((req, res) => {
   return res.status(404).json({ message: "Not found" });
@@ -65,12 +60,11 @@ app.use((err, req, res, next) => {
   return res.status(500).json({ message: err.message });
 });
 
-
 router.get("/products", controllerGoods.getGoods);
 router.post("/", controllerOrders.addOrder);
 router.post("/addOne", controllerGoods.addOneGood);
 router.patch("/editField", controllerGoods.changeField);
 router.post("/add", controllerGoods.addGoods);
-router.post('/order', controllerOrders.addOrder)
-router.get('/order', controllerOrders.fetchOrders)
-router.delete('/deleteOne', controllerGoods.deleteGood)
+router.post("/order", controllerOrders.addOrder);
+router.get("/order", controllerOrders.fetchOrders);
+router.delete("/deleteOne", controllerGoods.deleteGood);
