@@ -36,20 +36,10 @@ main();
 
 app.use(morgan("dev"));
 app.use(logger(formatsLogger));
-app.use(
-  cors({
-    origin: [
-      "https://ersag-front.web.app/",
-      "https://ersag-59502.web.app/",
-      "https://ersag-edit.web.app/",
-    ],
-  })
-);
-
+app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 app.use("/", router);
-
 app.use((req, res) => {
   return res.status(404).json({ message: "Not found" });
 });
