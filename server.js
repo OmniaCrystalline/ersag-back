@@ -34,7 +34,6 @@ async function main() {
 }
 main();
 
-app.use(morgan("dev"));
 app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
