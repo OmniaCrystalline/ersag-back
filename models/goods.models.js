@@ -5,7 +5,6 @@ const formidable = require("formidable");
 const fs = require("fs");
 const uploadDir = "./public/images/";
 
-
 async function addGoods(req, res, next) {
   try {
     const { goods } = req.body;
@@ -35,12 +34,16 @@ async function addOneGood(req, res, next) {
   });
 
   form.on("field", (fieldName, fieldValue) => {
-    newGood[fieldName] = fieldValue;
+    if (fieldName === "file") newGood.img = fieldValue;
+    else {
+      newGood[fieldName] = fieldValue;
+    }
   });
 
   form.on("file", (name, file) => {
-    newGood.img = file.newFilename;
-
+    if (file) {
+      newGood.img = file.newFilename;
+    }
   });
 
   form.parse(req, async (err, fields, files) => {
@@ -48,6 +51,7 @@ async function addOneGood(req, res, next) {
       next(err);
       return;
     }
+    console.log("newGood", newGood);
     const result = await newGood.save();
     return res.json({ message: result });
   });
@@ -76,7 +80,6 @@ async function changeField(req, res, next) {
       next(err);
       return;
     }
-    console.log("uploadDir", uploadDir);
 
     const item = await Good.findById(updated._id);
     try {
