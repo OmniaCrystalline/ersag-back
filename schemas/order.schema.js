@@ -41,7 +41,7 @@ const OrderSchema = new Schema({
   },
   order: [OrdersGoodSchema],
   date: {
-    type: date,
+    type: Date,
     required: [true, 'date is required']
   }
 });
