@@ -1,16 +1,16 @@
 /** @format */
 
-
 ///server update get order router , add order render
 
 const { Order } = require("../schemas/order.schema");
 
 async function addOrder(req, res, next) {
-    try {
-      await Order.create(req.body);
-      await mailSender(req.body)
-        
-    return res.json({message: 'order added'});
+  try {
+    req.body.active = true;
+    await Order.create(req.body);
+    await mailSender(req.body);
+
+    return res.json({ message: "order added" });
   } catch (error) {
     return res.json(error);
   }
@@ -19,7 +19,7 @@ async function addOrder(req, res, next) {
 const nodemailer = require("nodemailer");
 
 async function mailSender(req) {
-  const {name, phone, order} = req.body
+  const { name, phone, order } = req.body;
   const list = order
     .map(
       ({ title, quantity, price, volume }) =>
@@ -64,15 +64,43 @@ async function mailSender(req) {
 
 async function fetchOrders(req, res, next) {
   try {
-    const data = await Order.find({});
-    return res.json({ data });
+    const data = await Order.find({ active: true });
+    if (data.length === 0) return res.json({ message: "no orders" });
+    else {
+      return res.json({ data });
+    }
   } catch (error) {
-    return res.status(500).json({message: error})
-  }  
+    return res.status(500).json({ message: error });
+  }
+}
+
+async function fetchArchive(req, res, next) {
+  
+  try {
+    const data = await Order.find({ active: false });
+    console.log('data', data)
+    return res.json({data});
+  } catch (error) {
+    return res.status(500).json({ message: error });
+  }
+}
+
+async function moveToArchive(req, res, next) {
+  try {
+    const response = await Order.findByIdAndUpdate(
+      req.body._id,
+      { active: false },
+      { new: true }
+    );
+    return res.json({ message: response });
+  } catch (error) {
+    return res.status(500).json({ message: error });
+  }
 }
 
 module.exports = {
   addOrder,
   fetchOrders,
-}
-
+  fetchArchive,
+  moveToArchive,
+};

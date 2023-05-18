@@ -57,3 +57,5 @@ router.post("/add", controllerGoods.addGoods);
 router.post("/order", controllerOrders.addOrder);
 router.get("/order", controllerOrders.fetchOrders);
 router.delete("/deleteOne", controllerGoods.deleteGood);
+router.patch("/moveToArchive", controllerOrders.moveToArchive);
+router.get("/archive", controllerOrders.fetchArchive);

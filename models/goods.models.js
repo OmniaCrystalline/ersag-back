@@ -3,6 +3,7 @@ require("dotenv").config();
 const { Good } = require("../schemas/goods.schema");
 const formidable = require("formidable");
 const fs = require("fs");
+const { Order } = require("../schemas/order.schema");
 const uploadDir = "./public/images/";
 
 async function addGoods(req, res, next) {
@@ -107,10 +108,21 @@ async function deleteGood(req, res, next) {
   return res.json({ message: result });
 }
 
+async function moveToArchive(req, res, next) {
+  try {
+    const { _id } = req.body;
+    const response = await Order.findByIdAndUpdate(_id, { active: false }, { new: true })
+    return res.json({message: response})
+  } catch (error) {
+    return res.status(500).json({message: error})
+  }
+}
+
 module.exports = {
   addGoods,
   getGoods,
   addOneGood,
   changeField,
   deleteGood,
+  moveToArchive,
 };
