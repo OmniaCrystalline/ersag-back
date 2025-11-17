@@ -33,6 +33,17 @@ async function mailSender(req) {
   );
 
   try {
+    // Отримуємо дані для email з змінних оточення
+    const USER = process.env.EMAIL_USER;
+    const PASS = process.env.EMAIL_PASS;
+    const EMAIL = process.env.EMAIL_TO;
+
+    // Якщо email не налаштовано, просто пропускаємо відправку
+    if (!USER || !PASS || !EMAIL) {
+      console.log("Email не налаштовано. Пропускаємо відправку листа.");
+      return;
+    }
+
     const transport = nodemailer.createTransport({
       service: "gmail",
       host: "smtp.gmail.com",
@@ -75,11 +86,10 @@ async function fetchOrders(req, res, next) {
 }
 
 async function fetchArchive(req, res, next) {
-  
   try {
     const data = await Order.find({ active: false });
-    console.log('data', data)
-    return res.json({data});
+    console.log("data", data);
+    return res.json({ data });
   } catch (error) {
     return res.status(500).json({ message: error });
   }
@@ -98,9 +108,23 @@ async function moveToArchive(req, res, next) {
   }
 }
 
+async function restoreFromArchive(req, res, next) {
+  try {
+    const response = await Order.findByIdAndUpdate(
+      req.body._id,
+      { active: true },
+      { new: true }
+    );
+    return res.json({ message: response });
+  } catch (error) {
+    return res.status(500).json({ message: error });
+  }
+}
+
 module.exports = {
   addOrder,
   fetchOrders,
   fetchArchive,
   moveToArchive,
+  restoreFromArchive,
 };

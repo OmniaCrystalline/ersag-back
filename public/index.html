@@ -1,89 +1,838 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+<html lang="uk">
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/9.21.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/9.21.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/9.21.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/9.21.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/9.21.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/9.21.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/9.21.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/9.21.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/9.21.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/9.21.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ERSAG API Server</title>
+  <link rel="icon" type="image/svg+xml" href="/images/laurel-svgrepo-com.svg">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      padding: 40px;
+      margin-top: 50px;
+    }
+
+    h1 {
+      color: #667eea;
+      font-size: 32px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    .status {
+      text-align: center;
+      padding: 12px;
+      background: #4CAF50;
+      color: white;
+      border-radius: 6px;
+      margin-bottom: 30px;
+      font-weight: 500;
+    }
+
+    .endpoints {
+      margin-top: 30px;
+    }
+
+    .endpoint-group {
+      margin-bottom: 25px;
+    }
+
+    .endpoint-group h2 {
+      color: #764ba2;
+      font-size: 20px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .endpoint {
+      background: #f8f9fa;
+      border-left: 4px solid #667eea;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .method {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 12px;
+      margin-right: 10px;
+      text-transform: uppercase;
+    }
+
+    .get {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .post {
+      background: #2196F3;
+      color: white;
+    }
+
+    .patch {
+      background: #FF9800;
+      color: white;
+    }
+
+    .delete {
+      background: #f44336;
+      color: white;
+    }
+
+    .path {
+      color: #333;
+      font-weight: 500;
+    }
+
+    .description {
+      color: #666;
+      font-size: 14px;
+      margin-top: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .link-btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 16px;
+      background: #667eea;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background 0.3s;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .link-btn:hover {
+      background: #5568d3;
+    }
+
+    .link-btn.get {
+      background: #4CAF50;
+    }
+
+    .link-btn.get:hover {
+      background: #45a049;
+    }
+
+    .link-btn.post {
+      background: #2196F3;
+    }
+
+    .link-btn.post:hover {
+      background: #0b7dda;
+    }
+
+    .link-btn.patch {
+      background: #FF9800;
+    }
+
+    .link-btn.patch:hover {
+      background: #e68900;
+    }
+
+    .link-btn.delete {
+      background: #f44336;
+    }
+
+    .link-btn.delete:hover {
+      background: #da190b;
+    }
+
+    .test-info {
+      font-size: 12px;
+      color: #999;
+      margin-top: 5px;
+      font-style: italic;
+    }
+
+    .form-btn {
+      display: inline-block;
+      margin-top: 10px;
+      margin-left: 10px;
+      padding: 8px 16px;
+      background: #667eea;
+      color: white;
+      text-decoration: none;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .form-btn:hover {
+      background: #5568d3;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      overflow: auto;
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 50px auto;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 600px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      position: absolute;
+      right: 20px;
+      top: 15px;
+    }
+
+    .close:hover {
+      color: #000;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-group input[type="file"] {
+      padding: 5px;
+    }
+
+    .submit-btn {
+      background: #4CAF50;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .submit-btn:hover {
+      background: #45a049;
+    }
+
+    .submit-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .message {
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .products-section {
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 2px solid #f0f0f0;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: #f5f5f5;
+    }
+
+    .product-info {
+      padding: 15px;
+    }
+
+    .product-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .product-price {
+      font-size: 18px;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 5px;
+    }
+
+    .product-type {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-top: 5px;
+    }
+
+    .product-type.beauty {
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    .product-type.clean {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+
+    .product-details {
+      font-size: 12px;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+
+    .error-message {
+      text-align: center;
+      padding: 20px;
+      background: #f8d7da;
+      color: #721c24;
+      border-radius: 6px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+        margin-top: 20px;
       }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .endpoint {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🚀 ERSAG API Server</h1>
+    <p class="subtitle">Backend API для управління товарами та замовленнями</p>
+
+    <div
+      style="text-align: center; margin-bottom: 20px; padding: 15px; background: #e3f2fd; border-radius: 6px; color: #1976d2;">
+      <strong>📍 Адреса сервера:</strong> <code
+        style="background: white; padding: 4px 8px; border-radius: 4px;">http://localhost:3000</code>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+    <div class="status" id="status">
+      ✅ Сервер працює
+    </div>
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+    <div id="authStatus"
+      style="text-align: center; margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 6px;">
+      <div id="authInfo" style="margin-bottom: 10px;">
+        <span id="authText">Перевірка авторизації...</span>
+      </div>
+      <div id="authButtons">
+        <a href="/login" id="loginLink"
+          style="display: none; padding: 8px 16px; background: #667eea; color: white; text-decoration: none; border-radius: 4px; margin-right: 10px;">🔐
+          Увійти</a>
+        <button id="logoutBtn"
+          style="display: none; padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">🚪
+          Вийти</button>
+      </div>
+    </div>
+
+    <div class="endpoints">
+      <div class="endpoint-group">
+        <h2>📦 Товари (Products)</h2>
+
+        <div class="endpoint">
+          <span class="method get">GET</span>
+          <span class="path">/products</span>
+          <div class="description">Отримати список всіх товарів</div>
+          <a href="/products" target="_blank" class="link-btn get">Перевірити →</a>
+        </div>
+
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <span class="path">/addOne</span>
+          <div class="description">Додати один товар (з завантаженням зображення на Cloudinary)</div>
+          <button onclick="openAddForm()" class="form-btn post">Відкрити форму →</button>
+          <a href="/add-product.html" target="_blank" class="link-btn post" style="margin-left: 10px;">Окрема сторінка
+            →</a>
+        </div>
+
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <span class="path">/add</span>
+          <div class="description">Додати кілька товарів</div>
+          <div class="test-info">Використовуйте Postman або curl для тестування POST запитів</div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method patch">PATCH</span>
+          <span class="path">/editField</span>
+          <div class="description">Редагувати поле товару (з завантаженням зображення на Cloudinary)</div>
+          <button onclick="openEditForm()" class="form-btn patch">Відкрити форму →</button>
+          <a href="/edit-product.html" target="_blank" class="link-btn patch" style="margin-left: 10px;">Окрема сторінка
+            →</a>
+        </div>
+
+        <div class="endpoint">
+          <span class="method delete">DELETE</span>
+          <span class="path">/deleteOne</span>
+          <div class="description">Видалити товар</div>
+          <div class="test-info">Використовуйте Postman або curl для тестування DELETE запитів</div>
+        </div>
+      </div>
+
+      <div class="endpoint-group">
+        <h2>🛒 Замовлення (Orders)</h2>
+
+        <div class="endpoint">
+          <span class="method get">GET</span>
+          <span class="path">/order</span>
+          <div class="description">Отримати список активних замовлень</div>
+          <a href="/order" target="_blank" class="link-btn get">Перевірити →</a>
+        </div>
+
+        <div class="endpoint">
+          <span class="method patch">PATCH</span>
+          <span class="path">/restoreFromArchive</span>
+          <div class="description">Відновити замовлення з архіву</div>
+          <div class="test-info">Використовуйте Postman або curl для тестування PATCH запитів</div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method post">POST</span>
+          <span class="path">/order</span>
+          <div class="description">Створити нове замовлення</div>
+          <div class="test-info">Використовуйте Postman або curl для тестування POST запитів</div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method get">GET</span>
+          <span class="path">/archive</span>
+          <div class="description">Отримати архів замовлень</div>
+          <a href="/archive" target="_blank" class="link-btn get">Перевірити →</a>
+        </div>
+
+        <div class="endpoint">
+          <span class="method patch">PATCH</span>
+          <span class="path">/moveToArchive</span>
+          <div class="description">Перемістити замовлення в архів</div>
+          <div class="test-info">Використовуйте Postman або curl для тестування PATCH запитів</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Посилання на сторінки -->
+    <div style="text-align: center; margin-top: 40px; padding-top: 40px; border-top: 2px solid #f0f0f0;">
+      <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+        <a href="/products" class="link-btn get" style="font-size: 16px; padding: 12px 24px;">
+          📦 Переглянути всі товари →
+        </a>
+        <a href="/order" class="link-btn get" style="font-size: 16px; padding: 12px 24px; background: #667eea;">
+          📋 Переглянути замовлення →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальне вікно для додавання товару -->
+  <div id="addModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('addModal')">&times;</span>
+      <h2 style="color: #667eea; margin-bottom: 20px;">Додати новий товар</h2>
+      <form id="addForm" enctype="multipart/form-data">
+        <div class="form-group">
+          <label>Назва товару *</label>
+          <input type="text" name="title" required>
+        </div>
+        <div class="form-group">
+          <label>Опис *</label>
+          <textarea name="describe" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Використання *</label>
+          <textarea name="usage" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Зображення *</label>
+          <input type="file" name="img" accept="image/*" required>
+        </div>
+        <div class="form-group">
+          <label>Ціна *</label>
+          <input type="number" name="price" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label>Тип *</label>
+          <select name="type" required>
+            <option value="">Виберіть тип</option>
+            <option value="beauty">Beauty</option>
+            <option value="clean">Clean</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Об'єм *</label>
+          <input type="number" name="volume" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label>Кількість *</label>
+          <input type="number" name="quantity" value="1" required>
+        </div>
+        <div class="message" id="addMessage"></div>
+        <button type="submit" class="submit-btn">Додати товар</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Модальне вікно для редагування товару -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('editModal')">&times;</span>
+      <h2 style="color: #667eea; margin-bottom: 20px;">Редагувати товар</h2>
+      <form id="editForm" enctype="multipart/form-data">
+        <div class="form-group">
+          <label>ID товару *</label>
+          <input type="text" name="_id" required placeholder="Введіть ID товару для редагування">
+        </div>
+        <div class="form-group">
+          <label>Назва товару</label>
+          <input type="text" name="title">
+        </div>
+        <div class="form-group">
+          <label>Опис</label>
+          <textarea name="describe"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Використання</label>
+          <textarea name="usage"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Нове зображення</label>
+          <input type="file" name="img" accept="image/*">
+        </div>
+        <div class="form-group">
+          <label>Ціна</label>
+          <input type="number" name="price" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Тип</label>
+          <select name="type">
+            <option value="">Не змінювати</option>
+            <option value="beauty">Beauty</option>
+            <option value="clean">Clean</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Об'єм</label>
+          <input type="number" name="volume" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Кількість</label>
+          <input type="number" name="quantity">
+        </div>
+        <div class="message" id="editMessage"></div>
+        <button type="submit" class="submit-btn">Оновити товар</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Перевірка статусу авторизації
+    async function checkAuthStatus() {
+      try {
+        const response = await fetch('/checkAuth');
+        const data = await response.json();
+
+        const authText = document.getElementById('authText');
+        const loginLink = document.getElementById('loginLink');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        if (data.isAuthenticated) {
+          authText.textContent = `✅ Ви увійшли як: ${data.username}`;
+          loginLink.style.display = 'none';
+          logoutBtn.style.display = 'inline-block';
+        } else {
+          authText.textContent = '❌ Ви не авторизовані';
+          loginLink.style.display = 'inline-block';
+          logoutBtn.style.display = 'none';
+
+          // Отримуємо облікові дані з сервера для підказки
+          try {
+            const credsResponse = await fetch('/getCredentials');
+            const creds = await credsResponse.json();
+            if (creds.username && creds.password) {
+              loginLink.title = `Користувач: ${creds.username} | Пароль: ${creds.password}`;
+            } else {
+              loginLink.title = 'Користувач: admin | Пароль: admin123 (за замовчуванням)';
+            }
+          } catch (err) {
+            loginLink.title = 'Користувач: admin | Пароль: admin123 (за замовчуванням)';
+          }
         }
+      } catch (error) {
+        console.error('Помилка перевірки авторизації:', error);
+      }
+    }
+
+    // Обробка виходу
+    document.getElementById('logoutBtn')?.addEventListener('click', async function () {
+      try {
+        const response = await fetch('/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        if (response.ok) {
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Помилка виходу:', error);
+      }
+    });
+
+    // Перевіряємо статус при завантаженні сторінки
+    checkAuthStatus();
+
+    // Перевірка статусу сервера
+    fetch('/products', {
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+      .then(response => {
+        if (response.ok) {
+          document.getElementById('status').textContent = '✅ Сервер працює та готовий до роботи';
+        } else {
+          document.getElementById('status').textContent = '⚠️ Сервер працює, але є проблеми з підключенням';
+          document.getElementById('status').style.background = '#FF9800';
+        }
+      })
+      .catch(error => {
+        document.getElementById('status').textContent = '❌ Помилка підключення до сервера';
+        document.getElementById('status').style.background = '#f44336';
       });
-    </script>
-  </body>
+
+    // Функції для роботи з модальними вікнами
+    function openAddForm() {
+      document.getElementById('addModal').style.display = 'block';
+    }
+
+    function openEditForm() {
+      document.getElementById('editModal').style.display = 'block';
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+      const form = modalId === 'addModal' ? document.getElementById('addForm') : document.getElementById('editForm');
+      form.reset();
+      const messageEl = modalId === 'addModal' ? document.getElementById('addMessage') : document.getElementById('editMessage');
+      messageEl.style.display = 'none';
+      messageEl.className = 'message';
+    }
+
+    // Закрити модальне вікно при кліку поза ним
+    window.onclick = function (event) {
+      if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+      }
+    }
+
+    // Обробка форми додавання товару
+    document.getElementById('addForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const submitBtn = this.querySelector('.submit-btn');
+      const messageEl = document.getElementById('addMessage');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Завантаження...';
+      messageEl.style.display = 'none';
+
+      try {
+        const response = await fetch('/addOne', {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          messageEl.className = 'message success';
+          messageEl.textContent = 'Товар успішно додано!';
+          messageEl.style.display = 'block';
+          this.reset();
+          // Оновлюємо список товарів
+          loadProducts();
+          setTimeout(() => closeModal('addModal'), 2000);
+        } else {
+          messageEl.className = 'message error';
+          messageEl.textContent = result.message || 'Помилка при додаванні товару';
+          messageEl.style.display = 'block';
+        }
+      } catch (error) {
+        messageEl.className = 'message error';
+        messageEl.textContent = 'Помилка: ' + error.message;
+        messageEl.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Додати товар';
+      }
+    });
+
+    // Обробка форми редагування товару
+    document.getElementById('editForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const submitBtn = this.querySelector('.submit-btn');
+      const messageEl = document.getElementById('editMessage');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Оновлення...';
+      messageEl.style.display = 'none';
+
+      try {
+        const response = await fetch('/editField', {
+          method: 'PATCH',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          messageEl.className = 'message success';
+          messageEl.textContent = 'Товар успішно оновлено!';
+          messageEl.style.display = 'block';
+          // Оновлюємо список товарів
+          loadProducts();
+          setTimeout(() => closeModal('editModal'), 2000);
+        } else {
+          messageEl.className = 'message error';
+          messageEl.textContent = result.message || 'Помилка при оновленні товару';
+          messageEl.style.display = 'block';
+        }
+      } catch (error) {
+        messageEl.className = 'message error';
+        messageEl.textContent = 'Помилка: ' + error.message;
+        messageEl.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Оновити товар';
+      }
+    });
+  </script>
+</body>
+
 </html>

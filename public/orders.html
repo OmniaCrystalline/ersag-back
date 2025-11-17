@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Замовлення - ERSAG</title>
+  <link rel="icon" type="image/svg+xml" href="/images/laurel-svgrepo-com.svg">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      padding: 40px;
+      margin-top: 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      color: #667eea;
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 8px 16px;
+      background: #f0f0f0;
+      border-radius: 6px;
+    }
+
+    .back-link:hover {
+      background: #e0e0e0;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .tab {
+      padding: 12px 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #666;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      font-weight: 600;
+    }
+
+    .tab:hover {
+      color: #667eea;
+    }
+
+    .search-container {
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 15px 50px 15px 20px;
+      font-size: 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .search-input:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+      font-size: 20px;
+      pointer-events: none;
+    }
+
+    .search-results {
+      margin-top: 10px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .orders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .order-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e0e0e0;
+      padding: 20px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .order-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      border-color: #667eea;
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .order-info {
+      flex: 1;
+    }
+
+    .order-name {
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .order-phone {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+
+    .order-date {
+      font-size: 14px;
+      color: #999;
+    }
+
+    .order-status {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .order-status.active {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .order-status.archived {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .order-items {
+      margin-top: 15px;
+    }
+
+    .order-items-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .order-item-info {
+      flex: 1;
+    }
+
+    .order-item-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .order-item-details {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .order-item-price {
+      font-size: 18px;
+      font-weight: 600;
+      color: #667eea;
+    }
+
+    .order-total {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 2px solid #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .order-total-label {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .order-total-amount {
+      font-size: 24px;
+      font-weight: 700;
+      color: #667eea;
+    }
+
+    .order-actions {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-archive {
+      background: #ffc107;
+      color: #333;
+    }
+
+    .btn-archive:hover {
+      background: #e0a800;
+    }
+
+    .btn-restore {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-restore:hover {
+      background: #218838;
+    }
+
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .stats {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 16px;
+      color: #666;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .empty-state svg {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      opacity: 0.5;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+      font-size: 18px;
+    }
+
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .message {
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back-link">← Назад до головної</a>
+    
+    <div class="header">
+      <h1>📋 Замовлення</h1>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="active">Активні замовлення</button>
+      <button class="tab" data-tab="archive">Архів</button>
+    </div>
+
+    <div class="search-container">
+      <input 
+        type="text" 
+        id="searchInput" 
+        class="search-input" 
+        placeholder="🔍 Пошук замовлень за ім'ям, телефоном, товаром..."
+        autocomplete="off"
+      >
+      <span class="search-icon">🔍</span>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+
+    <div id="ordersContainer">
+      <div class="loading">Завантаження замовлень...</div>
+    </div>
+  </div>
+
+  <script>
+    // Зберігаємо всі замовлення для пошуку
+    let allOrders = [];
+    let currentTab = 'active';
+
+    // Функція для форматування дати
+    function formatDate(dateString) {
+      if (!dateString) return 'Дата не вказана';
+      const date = new Date(dateString);
+      return date.toLocaleString('uk-UA', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    // Функція для обчислення загальної суми замовлення
+    function calculateTotal(order) {
+      if (!order.order || !Array.isArray(order.order)) return 0;
+      return order.order.reduce((sum, item) => {
+        return sum + (Number(item.price) || 0) * (Number(item.quantity) || 0);
+      }, 0);
+    }
+
+    // Функція для відображення замовлень
+    function displayOrders(orders) {
+      const container = document.getElementById('ordersContainer');
+      const searchResults = document.getElementById('searchResults');
+      const searchInput = document.getElementById('searchInput');
+      const searchTerm = searchInput.value.trim().toLowerCase();
+
+      if (!orders || orders.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 7h-4m0 0V4a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3m0 0h4m-4 0v3m0-3h4m-4 0V7"/>
+            </svg>
+            <p style="font-size: 18px; margin-top: 10px;">Замовлення не знайдено</p>
+            <p style="font-size: 14px; margin-top: 5px;">${searchTerm ? 'Спробуйте інший запит' : currentTab === 'active' ? 'Активних замовлень поки немає' : 'Архів порожній'}</p>
+          </div>
+        `;
+        searchResults.textContent = '';
+        return;
+      }
+
+      const ordersHTML = `
+        <div class="orders-list">
+          ${orders.map((order) => {
+            const total = calculateTotal(order);
+            const isActive = order.active !== false;
+            
+            return `
+              <div class="order-card" data-order-id="${order._id}">
+                <div class="order-header">
+                  <div class="order-info">
+                    <div class="order-name">${order.name || 'Без імені'}</div>
+                    <div class="order-phone">📞 ${order.phone || 'Телефон не вказано'}</div>
+                    <div class="order-date">📅 ${formatDate(order.date)}</div>
+                  </div>
+                  <div class="order-status ${isActive ? 'active' : 'archived'}">
+                    ${isActive ? 'Активне' : 'Архів'}
+                  </div>
+                </div>
+                
+                <div class="order-items">
+                  <div class="order-items-title">Товари в замовленні:</div>
+                  ${order.order && Array.isArray(order.order) && order.order.length > 0
+                    ? order.order.map((item, index) => `
+                        <div class="order-item">
+                          <div class="order-item-info">
+                            <div class="order-item-title">${item.title || 'Без назви'}</div>
+                            <div class="order-item-details">
+                              ${item.volume ? `${item.volume} мл` : ''} 
+                              ${item.quantity ? `× ${item.quantity} шт` : ''}
+                            </div>
+                          </div>
+                          <div class="order-item-price">
+                            ${item.price ? (Number(item.price) * (Number(item.quantity) || 1)).toFixed(2) + ' ₴' : '0.00 ₴'}
+                          </div>
+                        </div>
+                      `).join('')
+                    : '<div style="padding: 10px; color: #999;">Товари не вказані</div>'
+                  }
+                </div>
+
+                <div class="order-total">
+                  <div class="order-total-label">Загальна сума:</div>
+                  <div class="order-total-amount">${total.toFixed(2)} ₴</div>
+                </div>
+
+                <div class="order-actions">
+                  ${isActive 
+                    ? `<button class="btn btn-archive" onclick="moveToArchive('${order._id}')">Перемістити в архів</button>`
+                    : `<button class="btn btn-restore" onclick="restoreFromArchive('${order._id}')">Відновити з архіву</button>`
+                  }
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        <div class="stats">
+          ${searchTerm 
+            ? `Знайдено замовлень: <strong>${orders.length}</strong> з ${allOrders.length}` 
+            : `Всього замовлень: <strong>${orders.length}</strong>`
+          }
+        </div>
+      `;
+
+      container.innerHTML = ordersHTML;
+
+      // Оновлюємо інформацію про результати пошуку
+      if (searchTerm) {
+        searchResults.textContent = `Знайдено: ${orders.length} замовлен${orders.length === 1 ? 'ня' : orders.length < 5 ? 'ня' : 'ь'}`;
+      } else {
+        searchResults.textContent = '';
+      }
+    }
+
+    // Функція для фільтрації замовлень
+    function filterOrders(searchTerm) {
+      if (!searchTerm) {
+        displayOrders(allOrders);
+        return;
+      }
+
+      const term = searchTerm.toLowerCase();
+      const filtered = allOrders.filter(order => {
+        // Пошук за ім'ям
+        const nameMatch = order.name && order.name.toLowerCase().includes(term);
+        
+        // Пошук за телефоном
+        const phoneMatch = order.phone && order.phone.toString().includes(term);
+        
+        // Пошук за датою
+        const dateMatch = order.date && formatDate(order.date).toLowerCase().includes(term);
+        
+        // Пошук за товарами в замовленні
+        const itemsMatch = order.order && Array.isArray(order.order) && order.order.some(item => {
+          const titleMatch = item.title && item.title.toLowerCase().includes(term);
+          const priceMatch = item.price && item.price.toString().includes(term);
+          const volumeMatch = item.volume && item.volume.toString().includes(term);
+          return titleMatch || priceMatch || volumeMatch;
+        });
+
+        // Пошук за ID
+        const idMatch = order._id && order._id.toLowerCase().includes(term);
+
+        return nameMatch || phoneMatch || dateMatch || itemsMatch || idMatch;
+      });
+
+      displayOrders(filtered);
+    }
+
+    // Завантаження замовлень
+    async function loadOrders() {
+      const container = document.getElementById('ordersContainer');
+      
+      try {
+        const endpoint = currentTab === 'active' ? '/order?json=true' : '/archive';
+        const response = await fetch(endpoint, {
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Помилка завантаження замовлень');
+        }
+
+        const data = await response.json();
+        
+        // Обробляємо різні формати відповіді
+        let orders = [];
+        if (data.data) {
+          orders = Array.isArray(data.data) ? data.data : [];
+        } else if (Array.isArray(data)) {
+          orders = data;
+        } else if (data.message === 'no orders') {
+          orders = [];
+        }
+
+        // Зберігаємо всі замовлення
+        allOrders = orders;
+        
+        // Відображаємо замовлення (з урахуванням поточного пошуку)
+        const searchInput = document.getElementById('searchInput');
+        filterOrders(searchInput.value.trim());
+      } catch (error) {
+        const container = document.getElementById('ordersContainer');
+        container.innerHTML = `
+          <div class="error-message">
+            <strong>Помилка завантаження замовлень</strong><br>
+            ${error.message}
+          </div>
+        `;
+      }
+    }
+
+    // Переміщення в архів
+    async function moveToArchive(orderId) {
+      try {
+        const response = await fetch('/moveToArchive', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ _id: orderId })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          // Оновлюємо список замовлень
+          loadOrders();
+        } else {
+          alert('Помилка: ' + (result.message || 'Не вдалося перемістити в архів'));
+        }
+      } catch (error) {
+        alert('Помилка: ' + error.message);
+      }
+    }
+
+    // Відновлення з архіву
+    async function restoreFromArchive(orderId) {
+      try {
+        const response = await fetch('/restoreFromArchive', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ _id: orderId })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          // Оновлюємо список замовлень
+          loadOrders();
+        } else {
+          alert('Помилка: ' + (result.message || 'Не вдалося відновити з архіву'));
+        }
+      } catch (error) {
+        alert('Помилка: ' + error.message);
+      }
+    }
+
+    // Обробка табів
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        currentTab = this.dataset.tab;
+        loadOrders();
+      });
+    });
+
+    // Обробка пошуку
+    const searchInput = document.getElementById('searchInput');
+    let searchTimeout;
+    
+    searchInput.addEventListener('input', function(e) {
+      clearTimeout(searchTimeout);
+      const term = e.target.value.trim();
+      
+      // Невелика затримка для оптимізації (debounce)
+      searchTimeout = setTimeout(() => {
+        filterOrders(term);
+      }, 300);
+    });
+
+    // Очищення пошуку при натисканні Escape
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        e.target.value = '';
+        filterOrders('');
+      }
+    });
+
+    // Завантажуємо замовлення при завантаженні сторінки
+    loadOrders();
+  </script>
+</body>
+</html>
+

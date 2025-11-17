@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Редагувати товар - ERSAG API</title>
+  <link rel="icon" type="image/svg+xml" href="/images/laurel-svgrepo-com.svg">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      padding: 40px;
+      margin-top: 50px;
+    }
+
+    h1 {
+      color: #667eea;
+      font-size: 28px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-group input[type="file"] {
+      padding: 5px;
+    }
+
+    .submit-btn {
+      background: #FF9800;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .submit-btn:hover {
+      background: #e68900;
+    }
+
+    .submit-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .message {
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .info-box {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      color: #1976d2;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back-link">← Назад до головної</a>
+    <h1>Редагувати товар</h1>
+    
+    <div class="info-box">
+      <strong>💡 Підказка:</strong> Заповніть тільки ті поля, які хочете змінити. ID товару є обов'язковим.
+    </div>
+    
+    <form id="editForm" enctype="multipart/form-data">
+      <div class="form-group">
+        <label>ID товару *</label>
+        <input type="text" name="_id" required placeholder="Введіть ID товару для редагування">
+      </div>
+      <div class="form-group">
+        <label>Назва товару</label>
+        <input type="text" name="title">
+      </div>
+      <div class="form-group">
+        <label>Опис</label>
+        <textarea name="describe"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Використання</label>
+        <textarea name="usage"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Нове зображення</label>
+        <input type="file" name="img" accept="image/*">
+      </div>
+      <div class="form-group">
+        <label>Ціна</label>
+        <input type="number" name="price" step="0.01">
+      </div>
+      <div class="form-group">
+        <label>Тип</label>
+        <select name="type">
+          <option value="">Не змінювати</option>
+          <option value="beauty">Beauty</option>
+          <option value="clean">Clean</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Об'єм</label>
+        <input type="number" name="volume" step="0.01">
+      </div>
+      <div class="form-group">
+        <label>Кількість</label>
+        <input type="number" name="quantity">
+      </div>
+      <div class="message" id="message"></div>
+      <button type="submit" class="submit-btn">Оновити товар</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('editForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const submitBtn = this.querySelector('.submit-btn');
+      const messageEl = document.getElementById('message');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Оновлення...';
+      messageEl.style.display = 'none';
+
+      try {
+        const response = await fetch('/editField', {
+          method: 'PATCH',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          messageEl.className = 'message success';
+          messageEl.textContent = 'Товар успішно оновлено!';
+          messageEl.style.display = 'block';
+        } else {
+          messageEl.className = 'message error';
+          messageEl.textContent = result.message || 'Помилка при оновленні товару';
+          messageEl.style.display = 'block';
+        }
+      } catch (error) {
+        messageEl.className = 'message error';
+        messageEl.textContent = 'Помилка: ' + error.message;
+        messageEl.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Оновити товар';
+      }
+    });
+  </script>
+</body>
+</html>
+

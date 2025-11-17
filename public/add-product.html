@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Додати товар - ERSAG API</title>
+  <link rel="icon" type="image/svg+xml" href="/images/laurel-svgrepo-com.svg">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      padding: 40px;
+      margin-top: 50px;
+    }
+
+    h1 {
+      color: #667eea;
+      font-size: 28px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-group input[type="file"] {
+      padding: 5px;
+    }
+
+    .submit-btn {
+      background: #4CAF50;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .submit-btn:hover {
+      background: #45a049;
+    }
+
+    .submit-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .message {
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back-link">← Назад до головної</a>
+    <h1>Додати новий товар</h1>
+    
+    <form id="addForm" enctype="multipart/form-data">
+      <div class="form-group">
+        <label>Назва товару *</label>
+        <input type="text" name="title" required>
+      </div>
+      <div class="form-group">
+        <label>Опис *</label>
+        <textarea name="describe" required></textarea>
+      </div>
+      <div class="form-group">
+        <label>Використання *</label>
+        <textarea name="usage" required></textarea>
+      </div>
+      <div class="form-group">
+        <label>Зображення *</label>
+        <input type="file" name="img" accept="image/*" required>
+      </div>
+      <div class="form-group">
+        <label>Ціна *</label>
+        <input type="number" name="price" step="0.01" required>
+      </div>
+      <div class="form-group">
+        <label>Тип *</label>
+        <select name="type" required>
+          <option value="">Виберіть тип</option>
+          <option value="beauty">Beauty</option>
+          <option value="clean">Clean</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Об'єм *</label>
+        <input type="number" name="volume" step="0.01" required>
+      </div>
+      <div class="form-group">
+        <label>Кількість *</label>
+        <input type="number" name="quantity" value="1" required>
+      </div>
+      <div class="message" id="message"></div>
+      <button type="submit" class="submit-btn">Додати товар</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('addForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const submitBtn = this.querySelector('.submit-btn');
+      const messageEl = document.getElementById('message');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Завантаження...';
+      messageEl.style.display = 'none';
+
+      try {
+        const response = await fetch('/addOne', {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          messageEl.className = 'message success';
+          messageEl.textContent = 'Товар успішно додано!';
+          messageEl.style.display = 'block';
+          this.reset();
+        } else {
+          messageEl.className = 'message error';
+          messageEl.textContent = result.message || 'Помилка при додаванні товару';
+          messageEl.style.display = 'block';
+        }
+      } catch (error) {
+        messageEl.className = 'message error';
+        messageEl.textContent = 'Помилка: ' + error.message;
+        messageEl.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Додати товар';
+      }
+    });
+  </script>
+</body>
+</html>
+

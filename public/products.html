@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Всі товари - ERSAG</title>
+  <link rel="icon" type="image/svg+xml" href="/images/laurel-svgrepo-com.svg">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      padding: 40px;
+      margin-top: 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      color: #667eea;
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 8px 16px;
+      background: #f0f0f0;
+      border-radius: 6px;
+    }
+
+    .back-link:hover {
+      background: #e0e0e0;
+    }
+
+    .search-container {
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 15px 50px 15px 20px;
+      font-size: 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .search-input:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+      font-size: 20px;
+      pointer-events: none;
+    }
+
+    .search-results {
+      margin-top: 10px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      border: 1px solid #e0e0e0;
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      border-color: #667eea;
+    }
+
+    .product-image-container {
+      width: 100%;
+      height: 250px;
+      overflow: hidden;
+      background: #f5f5f5;
+      position: relative;
+    }
+
+    .product-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .product-card:hover .product-image {
+      transform: scale(1.05);
+    }
+
+    .product-info {
+      padding: 20px;
+    }
+
+    .product-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 10px;
+      min-height: 50px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .product-price {
+      font-size: 24px;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    .product-type {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .product-type.beauty {
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    .product-type.clean {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+
+    .product-details {
+      font-size: 14px;
+      color: #666;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .product-details div {
+      margin-bottom: 5px;
+    }
+
+    .product-id {
+      font-size: 11px;
+      color: #999;
+      margin-top: 8px;
+      font-family: monospace;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+      font-size: 18px;
+    }
+
+    .error-message {
+      text-align: center;
+      padding: 30px;
+      background: #f8d7da;
+      color: #721c24;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 16px;
+    }
+
+    .stats {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      color: #666;
+      font-size: 16px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .empty-state svg {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      overflow: auto;
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 50px auto;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 600px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      position: absolute;
+      right: 20px;
+      top: 15px;
+    }
+
+    .close:hover {
+      color: #000;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-group input[type="file"] {
+      padding: 5px;
+    }
+
+    .submit-btn {
+      background: #FF9800;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .submit-btn:hover {
+      background: #e68900;
+    }
+
+    .submit-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .message {
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    @media (max-width: 768px) {
+      .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back-link">← Назад до головної</a>
+    
+    <div class="header">
+      <h1>📦 Всі товари</h1>
+    </div>
+
+    <div class="search-container">
+      <input 
+        type="text" 
+        id="searchInput" 
+        class="search-input" 
+        placeholder="🔍 Пошук товарів за назвою, описом, типом, ціною..."
+        autocomplete="off"
+      >
+      <span class="search-icon">🔍</span>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+
+    <div id="productsContainer">
+      <div class="loading">Завантаження товарів...</div>
+    </div>
+  </div>
+
+  <!-- Модальне вікно для редагування товару -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeEditModal()">&times;</span>
+      <h2 style="color: #667eea; margin-bottom: 20px;">Редагувати товар</h2>
+      <div style="background: #e3f2fd; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; color: #1976d2;">
+        💡 <strong>Підказка:</strong> Заповніть тільки ті поля, які хочете змінити. Всі поля опціональні (крім ID).
+      </div>
+      <form id="editForm" enctype="multipart/form-data">
+        <div class="form-group">
+          <label>ID товару *</label>
+          <input type="text" name="_id" id="edit_id" required placeholder="Введіть ID товару">
+          <small style="color: #666; font-size: 12px;">Обов'язкове поле для ідентифікації товару</small>
+        </div>
+        <div class="form-group">
+          <label>Назва товару</label>
+          <input type="text" name="title" id="edit_title" placeholder="Залиште порожнім, щоб не змінювати">
+        </div>
+        <div class="form-group">
+          <label>Опис</label>
+          <textarea name="describe" id="edit_describe" placeholder="Залиште порожнім, щоб не змінювати"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Використання</label>
+          <textarea name="usage" id="edit_usage" placeholder="Залиште порожнім, щоб не змінювати"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Нове зображення</label>
+          <input type="file" name="img" accept="image/*" id="edit_img">
+          <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">Не обов'язково. Залиште порожнім, щоб не змінювати зображення</small>
+          <div id="current-image" style="margin-top: 10px;"></div>
+        </div>
+        <div class="form-group">
+          <label>Ціна</label>
+          <input type="number" name="price" step="0.01" id="edit_price" placeholder="Залиште порожнім, щоб не змінювати">
+        </div>
+        <div class="form-group">
+          <label>Тип</label>
+          <select name="type" id="edit_type">
+            <option value="">Не змінювати</option>
+            <option value="beauty">Beauty</option>
+            <option value="clean">Clean</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Об'єм</label>
+          <input type="number" name="volume" step="0.01" id="edit_volume" placeholder="Залиште порожнім, щоб не змінювати">
+        </div>
+        <div class="form-group">
+          <label>Кількість</label>
+          <input type="number" name="quantity" id="edit_quantity" placeholder="Залиште порожнім, щоб не змінювати">
+        </div>
+        <div class="message" id="editMessage"></div>
+        <button type="submit" class="submit-btn">Оновити товар</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Зберігаємо всі товари для пошуку
+    let allProducts = [];
+    let filteredProducts = [];
+
+    // Функція для відображення товарів
+    function displayProducts(products) {
+      const container = document.getElementById('productsContainer');
+      const searchResults = document.getElementById('searchResults');
+      const searchInput = document.getElementById('searchInput');
+      const searchTerm = searchInput.value.trim().toLowerCase();
+
+      filteredProducts = products;
+
+      if (!products || products.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 7h-4m0 0V4a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3m0 0h4m-4 0v3m0-3h4m-4 0V7"/>
+            </svg>
+            <p style="font-size: 18px; margin-top: 10px;">Товари не знайдено</p>
+            <p style="font-size: 14px; margin-top: 5px;">${searchTerm ? 'Спробуйте інший запит' : 'Додайте перший товар, щоб він з\'явився тут'}</p>
+          </div>
+        `;
+        searchResults.textContent = '';
+        return;
+      }
+
+      const productsHTML = `
+        <div class="products-grid">
+          ${products.map((product, index) => `
+            <div class="product-card" data-product-index="${index}">
+              <div class="product-image-container">
+                <img 
+                  src="${product.img || ''}" 
+                  alt="${product.title || 'Товар'}"
+                  class="product-image"
+                  onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'250\'%3E%3Crect fill=\'%23f5f5f5\' width=\'300\' height=\'250\'/%3E%3Ctext fill=\'%23999\' font-family=\'sans-serif\' font-size=\'16\' dy=\'10.5\' font-weight=\'bold\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\'%3EНемає зображення%3C/text%3E%3C/svg%3E'"
+                >
+              </div>
+              <div class="product-info">
+                <div class="product-title">${product.title || 'Без назви'}</div>
+                <div class="product-price">${product.price ? product.price.toFixed(2) + ' ₴' : 'Ціна не вказана'}</div>
+                <div class="product-type ${product.type || ''}">
+                  ${product.type === 'beauty' ? 'Beauty' : product.type === 'clean' ? 'Clean' : product.type || 'Не вказано'}
+                </div>
+                <div class="product-details">
+                  <div><strong>Об'єм:</strong> ${product.volume || 'Н/Д'} мл</div>
+                  <div><strong>Кількість:</strong> ${product.quantity || 0} шт</div>
+                  ${product.describe ? `<div style="margin-top: 8px; font-size: 12px; color: #999; line-height: 1.4;">${product.describe.substring(0, 100)}${product.describe.length > 100 ? '...' : ''}</div>` : ''}
+                  ${product._id ? `<div class="product-id">ID: ${product._id}</div>` : ''}
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="stats">
+          ${searchTerm 
+            ? `Знайдено товарів: <strong>${products.length}</strong> з ${allProducts.length}` 
+            : `Всього товарів: <strong>${products.length}</strong>`
+          }
+        </div>
+      `;
+
+      container.innerHTML = productsHTML;
+      
+      // Додаємо обробники подій для кліку на картки
+      container.querySelectorAll('.product-card').forEach((card, index) => {
+        card.addEventListener('click', () => {
+          openEditModal(products[index]);
+        });
+      });
+
+      // Оновлюємо інформацію про результати пошуку
+      if (searchTerm) {
+        searchResults.textContent = `Знайдено: ${products.length} товар${products.length === 1 ? '' : products.length < 5 ? 'и' : 'ів'}`;
+      } else {
+        searchResults.textContent = '';
+      }
+    }
+
+    // Функція для фільтрації товарів
+    function filterProducts(searchTerm) {
+      if (!searchTerm) {
+        displayProducts(allProducts);
+        return;
+      }
+
+      const term = searchTerm.toLowerCase();
+      const filtered = allProducts.filter(product => {
+        // Пошук за назвою
+        const titleMatch = product.title && product.title.toLowerCase().includes(term);
+        
+        // Пошук за описом
+        const describeMatch = product.describe && product.describe.toLowerCase().includes(term);
+        
+        // Пошук за типом
+        const typeMatch = product.type && product.type.toLowerCase().includes(term);
+        
+        // Пошук за ціною (якщо введено число)
+        const priceMatch = product.price && product.price.toString().includes(term);
+        
+        // Пошук за об'ємом
+        const volumeMatch = product.volume && product.volume.toString().includes(term);
+        
+        // Пошук за ID
+        const idMatch = product._id && product._id.toLowerCase().includes(term);
+
+        return titleMatch || describeMatch || typeMatch || priceMatch || volumeMatch || idMatch;
+      });
+
+      displayProducts(filtered);
+    }
+
+    // Завантаження товарів
+    async function loadProducts() {
+      const container = document.getElementById('productsContainer');
+      
+      try {
+        // Явно просимо JSON для API запиту
+        const response = await fetch('/products', {
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Помилка завантаження товарів');
+        }
+
+        const data = await response.json();
+        const products = data.data || data;
+
+        // Зберігаємо всі товари
+        allProducts = products || [];
+        
+        // Відображаємо товари (з урахуванням поточного пошуку)
+        const searchInput = document.getElementById('searchInput');
+        filterProducts(searchInput.value.trim());
+      } catch (error) {
+        const container = document.getElementById('productsContainer');
+        container.innerHTML = `
+          <div class="error-message">
+            <strong>Помилка завантаження товарів</strong><br>
+            ${error.message}
+          </div>
+        `;
+      }
+    }
+
+    // Завантажуємо товари при завантаженні сторінки
+    loadProducts();
+
+    // Обробка пошуку
+    const searchInput = document.getElementById('searchInput');
+    let searchTimeout;
+    
+    searchInput.addEventListener('input', function(e) {
+      clearTimeout(searchTimeout);
+      const term = e.target.value.trim();
+      
+      // Невелика затримка для оптимізації (debounce)
+      searchTimeout = setTimeout(() => {
+        filterProducts(term);
+      }, 300);
+    });
+
+    // Очищення пошуку при натисканні Escape
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        e.target.value = '';
+        filterProducts('');
+      }
+    });
+
+    // Функція для відкриття модального вікна редагування
+    function openEditModal(product) {
+      document.getElementById('edit_id').value = product._id || '';
+      document.getElementById('edit_title').value = product.title || '';
+      document.getElementById('edit_describe').value = product.describe || '';
+      document.getElementById('edit_usage').value = product.usage || '';
+      document.getElementById('edit_price').value = product.price || '';
+      document.getElementById('edit_type').value = product.type || '';
+      document.getElementById('edit_volume').value = product.volume || '';
+      document.getElementById('edit_quantity').value = product.quantity || '';
+      
+      // Показуємо поточне зображення
+      const currentImageDiv = document.getElementById('current-image');
+      if (product.img) {
+        currentImageDiv.innerHTML = `
+          <div style="margin-top: 10px;">
+            <strong>Поточне зображення:</strong><br>
+            <img src="${product.img}" style="max-width: 200px; max-height: 150px; margin-top: 10px; border-radius: 4px; border: 1px solid #ddd;">
+          </div>
+        `;
+      } else {
+        currentImageDiv.innerHTML = '';
+      }
+      
+      document.getElementById('editModal').style.display = 'block';
+    }
+
+    // Функція для закриття модального вікна
+    function closeEditModal() {
+      document.getElementById('editModal').style.display = 'none';
+      document.getElementById('editForm').reset();
+      document.getElementById('editMessage').style.display = 'none';
+      document.getElementById('current-image').innerHTML = '';
+    }
+
+    // Закрити модальне вікно при кліку поза ним
+    window.onclick = function(event) {
+      const modal = document.getElementById('editModal');
+      if (event.target === modal) {
+        closeEditModal();
+      }
+    }
+
+    // Обробка форми редагування
+    document.getElementById('editForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const submitBtn = this.querySelector('.submit-btn');
+      const messageEl = document.getElementById('editMessage');
+
+      // Видаляємо поле img з FormData, якщо файл не вибрано
+      const fileInput = document.getElementById('edit_img');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        formData.delete('img');
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Оновлення...';
+      messageEl.style.display = 'none';
+
+      try {
+        const response = await fetch('/editField', {
+          method: 'PATCH',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          messageEl.className = 'message success';
+          messageEl.textContent = 'Товар успішно оновлено!';
+          messageEl.style.display = 'block';
+          // Оновлюємо список товарів (з урахуванням поточного пошуку)
+          loadProducts();
+          setTimeout(() => {
+            closeEditModal();
+          }, 1500);
+        } else {
+          messageEl.className = 'message error';
+          messageEl.textContent = result.message || 'Помилка при оновленні товару';
+          messageEl.style.display = 'block';
+        }
+      } catch (error) {
+        messageEl.className = 'message error';
+        messageEl.textContent = 'Помилка: ' + error.message;
+        messageEl.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Оновити товар';
+      }
+    });
+  </script>
+</body>
+</html>
+
