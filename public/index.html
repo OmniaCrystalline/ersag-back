@@ -12,12 +12,15 @@
   <meta property="og:title" content="ERSAG API Server">
   <meta property="og:description" content="Backend API для управління товарами та замовленнями">
   <meta property="og:image" content="/images/image.png">
+  <meta property="og:image:type" content="/images/image.png">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ERSAG API Server">
   <meta name="twitter:description" content="Backend API для управління товарами та замовленнями">
   <meta name="twitter:image" content="/images/image.png">
+
+  <meta property="og:url" content="https://ersagback.onrender.com">
 
   <style>
     * {
@@ -438,11 +441,6 @@
     <h1>🚀 ERSAG API Server</h1>
     <p class="subtitle">Backend API для управління товарами та замовленнями</p>
 
-    <div
-      style="text-align: center; margin-bottom: 20px; padding: 15px; background: #e3f2fd; border-radius: 6px; color: #1976d2;">
-      <strong>📍 Адреса сервера:</strong> <code
-        style="background: white; padding: 4px 8px; border-radius: 4px;">http://localhost:3000</code>
-    </div>
 
     <div class="status" id="status">
       ✅ Сервер працює
@@ -845,6 +843,21 @@
         submitBtn.textContent = 'Оновити товар';
       }
     });
+
+    // Встановлення абсолютних URL для прев'ю картинки
+    (function () {
+      const baseUrl = window.location.origin;
+      const imageUrl = baseUrl + '/images/image.png';
+      const pageUrl = baseUrl + window.location.pathname;
+
+      const ogImage = document.getElementById('og-image');
+      const ogUrl = document.getElementById('og-url');
+      const twitterImage = document.getElementById('twitter-image');
+
+      if (ogImage) ogImage.setAttribute('content', imageUrl);
+      if (ogUrl) ogUrl.setAttribute('content', pageUrl);
+      if (twitterImage) twitterImage.setAttribute('content', imageUrl);
+    })();
   </script>
 </body>
 
